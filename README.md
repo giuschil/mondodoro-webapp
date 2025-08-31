@@ -88,7 +88,52 @@ docker-compose exec backend python manage.py migrate
 
 # Crea un superuser Django
 docker-compose exec backend python manage.py createsuperuser
+
+# Accedi al database PostgreSQL
+docker-compose exec postgres psql -U postgres -d mondodoro
+
+# Esegui shell Django
+docker-compose exec backend python manage.py shell
 ```
+
+## 🧪 Testing e Sviluppo
+
+### Account Demo
+L'applicazione include account demo preconfigurati:
+- **Gioielliere**: jeweler@demo.com / password123
+- **Invitato**: guest@demo.com / password123
+
+### Stripe Test Mode
+- **Publishable Key**: `pk_test_51S290YKEjZQBnFGO...` (già configurata)
+- **Secret Key**: `sk_test_51S290YKEjZQBnFGO...` (già configurata)
+- **Webhook Endpoint**: `https://yourdomain.com/api/payments/stripe/webhook/`
+
+### Carte di Test Stripe
+- **Successo**: 4242 4242 4242 4242
+- **Fallimento**: 4000 0000 0000 0002
+- **3D Secure**: 4000 0025 0000 3155
+
+## 📊 Monitoraggio
+
+### Logs Disponibili
+```bash
+# Backend Django
+docker-compose logs backend
+
+# Frontend Next.js  
+docker-compose logs frontend
+
+# Database PostgreSQL
+docker-compose logs postgres
+
+# Redis (Celery)
+docker-compose logs redis
+```
+
+### Health Checks
+- **Backend**: http://localhost:8000/api/docs/
+- **Frontend**: http://localhost:3000
+- **Database**: Connessione tramite container postgres
 
 ### Local Development
 
