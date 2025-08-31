@@ -18,7 +18,9 @@
     "lucide-react": "^0.292.0",
     "@headlessui/react": "^1.7.17",
     "clsx": "^2.0.0",
-    "tailwind-merge": "^2.0.0"
+    "tailwind-merge": "^2.0.0",
+    "@stripe/stripe-js": "^2.4.0",
+    "@stripe/react-stripe-js": "^2.4.0"
   },
   "devDependencies": {
     "typescript": "^5",

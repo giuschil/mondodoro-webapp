@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { giftListsAPI } from '@/lib/api';
+import { giftListsAPI, paymentsAPI } from '@/lib/api';
 import { GiftListPublic } from '@/types';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -96,23 +96,19 @@ export default function PublicGiftListPage() {
         is_anonymous: contributionForm.is_anonymous,
       });
       
-      toast.success('Contributo registrato! Procedi al pagamento.');
-      
-      // Here we would redirect to Stripe Checkout
-      // For now, just reset the form
-      setContributionForm({
-        contributor_name: '',
-        contributor_email: '',
-        contributor_message: '',
-        amount: '',
-        is_anonymous: false,
+      // Create payment intent
+      const paymentIntent = await paymentsAPI.createPaymentIntent({
+        contribution_id: contribution.id,
+        amount: parseFloat(contributionForm.amount),
       });
-      setShowContributeForm(false);
+      
+      // Redirect to payment page with client secret
+      const paymentUrl = `/payment?client_secret=${paymentIntent.client_secret}&contribution_id=${contribution.id}&contributor_name=${encodeURIComponent(contributionForm.contributor_name)}&amount=${contributionForm.amount}`;
+      window.location.href = paymentUrl;
       
     } catch (error) {
       console.error('Error creating contribution:', error);
       toast.error('Errore durante la registrazione del contributo');
-    } finally {
       setContributionLoading(false);
     }
   };
