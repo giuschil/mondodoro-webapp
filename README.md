@@ -41,30 +41,53 @@ A comprehensive platform for creating gift lists and online collections dedicate
 
 ### Prerequisites
 - Docker and Docker Compose
-- Node.js 18+ (for local development)
-- Python 3.9+ (for local development)
-- Stripe account
+- Account Stripe (chiavi già configurate per il testing)
 
-### Environment Setup
+### Avvio Rapido con Docker
 
-1. Copy the environment file:
+1. **Clona il repository:**
+```bash
+git clone https://github.com/giuschil/mondodoro-webapp.git
+cd mondodoro-webapp
+```
+
+2. **Configura le variabili d'ambiente:**
 ```bash
 cp env.example .env
 ```
+Le chiavi Stripe sono già configurate per il testing.
 
-2. Update `.env` with your Stripe keys and other configurations
+3. **Avvia tutti i servizi con Docker:**
+```bash
+docker-compose up --build -d
+```
 
-### Running with Docker
+4. **Accedi all'applicazione:**
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/api/docs/
+- **Admin Django**: http://localhost:8000/admin/
+
+### Comandi Docker Utili
 
 ```bash
-# Start all services
-docker-compose up -d
-
-# View logs
+# Visualizza i logs
 docker-compose logs -f
 
-# Stop services
+# Riavvia un servizio
+docker-compose restart backend
+
+# Ferma tutti i servizi
 docker-compose down
+
+# Ricostruisci e riavvia
+docker-compose up --build
+
+# Esegui le migrazioni Django
+docker-compose exec backend python manage.py migrate
+
+# Crea un superuser Django
+docker-compose exec backend python manage.py createsuperuser
 ```
 
 ### Local Development
