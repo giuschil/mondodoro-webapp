@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from .models import StripeAccount, PaymentIntent, WebhookEvent, PlatformSettings
 from .stripe_utils import (
-    create_stripe_account, 
+    create_stripe_account,
     create_onboarding_link,
     create_payment_intent_for_contribution,
     handle_payment_succeeded,
@@ -22,8 +22,7 @@ from .stripe_utils import (
 from apps.gift_lists.models import Contribution
 from apps.accounts.models import User
 
-# Configure Stripe
-stripe.api_key = settings.STRIPE_SECRET_KEY
+# Configure Stripe - moved to function level to ensure settings are loaded
 
 
 @extend_schema(
@@ -142,8 +141,14 @@ def stripe_onboard_return_view(request):
 @permission_classes([permissions.AllowAny])
 def create_payment_intent_view(request):
     """Create Stripe payment intent for contribution"""
+    # Configure Stripe API key at function level
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    
     try:
-        contribution_id = request.data.get('contribution_id')
+        # Parse JSON data
+        data = request.data
+        
+        contribution_id = data.get('contribution_id')
         
         if not contribution_id:
             return Response(
@@ -256,3 +261,91 @@ def stripe_webhook_view(request):
         return HttpResponse(status=500)
     
     return HttpResponse(status=200)
+
+
+@extend_schema(
+    summary="Confirm payment",
+    description="Confirm payment completion",
+    tags=["Payments"]
+)
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def confirm_payment_view(request):
+    """Confirm payment completion"""
+    try:
+        payment_intent_id = request.data.get('payment_intent_id')
+        
+        if not payment_intent_id:
+            return Response(
+                {'error': 'payment_intent_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Get payment intent from database
+        try:
+            payment_intent_obj = PaymentIntent.objects.get(stripe_payment_intent_id=payment_intent_id)
+        except PaymentIntent.DoesNotExist:
+            return Response(
+                {'error': 'Payment intent not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Retrieve from Stripe to get latest status
+        stripe_pi = stripe.PaymentIntent.retrieve(payment_intent_id)
+        
+        # Update local payment intent
+        payment_intent_obj.status = stripe_pi.status
+        payment_intent_obj.save()
+        
+        # Update contribution if payment succeeded
+        if stripe_pi.status == 'succeeded':
+            contribution = payment_intent_obj.contribution
+            contribution.payment_status = Contribution.PaymentStatus.COMPLETED
+            contribution.completed_at = timezone.now()
+            contribution.save()
+            
+            return Response({
+                'success': True,
+                'message': 'Payment confirmed successfully'
+            })
+        else:
+            return Response({
+                'success': False,
+                'message': f'Payment status: {stripe_pi.status}'
+            })
+        
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@extend_schema(
+    summary="Get platform settings",
+    description="Get platform payment settings (admin only)",
+    tags=["Platform"]
+)
+@api_view(['GET'])
+@permission_classes([permissions.IsAdminUser])
+def platform_settings_view(request):
+    """Get platform settings"""
+    try:
+        settings_obj, created = PlatformSettings.objects.get_or_create(
+            defaults={
+                'stripe_platform_fee_percentage': 2.5,
+                'stripe_application_fee_percentage': 1.0
+            }
+        )
+        
+        return Response({
+            'stripe_platform_fee_percentage': settings_obj.stripe_platform_fee_percentage,
+            'stripe_application_fee_percentage': settings_obj.stripe_application_fee_percentage,
+            'stripe_webhook_enabled': settings_obj.stripe_webhook_enabled,
+        })
+        
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

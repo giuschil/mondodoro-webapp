@@ -20,7 +20,10 @@ export interface GiftList {
   id: string;
   title: string;
   description?: string;
+  list_type: 'money_collection' | 'product_list';
   target_amount: number;
+  fixed_contribution_amount?: number;
+  max_contributors?: number;
   status: 'draft' | 'active' | 'completed' | 'cancelled';
   is_public: boolean;
   allow_anonymous_contributions: boolean;
@@ -30,6 +33,7 @@ export interface GiftList {
   jeweler_name: string;
   business_name?: string;
   items: GiftListItem[];
+  products: GiftListProduct[];
   contributions: Contribution[];
   total_contributions: number;
   progress_percentage: number;
@@ -54,6 +58,21 @@ export interface GiftListItem {
   updated_at: string;
 }
 
+export interface GiftListProduct {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  image_url?: string;
+  status: 'available' | 'purchased' | 'reserved';
+  order: number;
+  purchased_by?: string;
+  purchased_at?: string;
+  is_available: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Contribution {
   id: string;
   contributor_name: string;
@@ -61,6 +80,7 @@ export interface Contribution {
   contributor_message?: string;
   is_anonymous: boolean;
   amount: number;
+  product?: GiftListProduct;
   payment_status: 'pending' | 'completed' | 'failed' | 'refunded';
   display_name: string;
   created_at: string;
@@ -71,11 +91,15 @@ export interface GiftListPublic {
   id: string;
   title: string;
   description?: string;
+  list_type: 'money_collection' | 'product_list';
   target_amount: number;
+  fixed_contribution_amount?: number;
+  max_contributors?: number;
   cover_image?: string;
   jeweler_name: string;
   business_name?: string;
   items: GiftListItem[];
+  products: GiftListProduct[];
   recent_contributions: {
     display_name: string;
     amount: number;

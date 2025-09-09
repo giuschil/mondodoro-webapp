@@ -5,8 +5,7 @@ from django.utils import timezone
 from .models import StripeAccount, PaymentIntent, PlatformSettings
 from apps.gift_lists.models import Contribution
 
-# Configure Stripe
-stripe.api_key = settings.STRIPE_SECRET_KEY
+# Configure Stripe - moved to function level to ensure settings are loaded
 
 
 def create_stripe_account(user):
@@ -46,36 +45,27 @@ def create_onboarding_link(account_id, refresh_url, return_url):
 
 
 def create_payment_intent_for_contribution(contribution):
-    """Create Stripe payment intent for contribution"""
-    # Get jeweler's Stripe account
-    jeweler = contribution.gift_list.jeweler
-    stripe_account = StripeAccount.objects.get(
-        jeweler=jeweler,
-        account_status=StripeAccount.AccountStatus.ACTIVE
-    )
+    """Create Stripe payment intent for contribution (White Label Mode)"""
+    # Configure Stripe API key at function level
+    stripe.api_key = settings.STRIPE_SECRET_KEY
     
-    # Calculate platform fee
-    platform_settings = PlatformSettings.load()
+    jeweler = contribution.gift_list.jeweler
     amount_cents = int(contribution.amount * 100)  # Convert to cents
     
-    # Calculate application fee (platform commission)
-    fee_percentage = platform_settings.platform_fee_percentage / 100
-    fee_fixed_cents = int(platform_settings.platform_fee_fixed * 100)
-    application_fee = int(amount_cents * fee_percentage) + fee_fixed_cents
-    
-    # Create payment intent
+    # White Label Mode: Direct payment to jeweler's Stripe account
+    # No Stripe Connect needed - each installation uses jeweler's own keys
     payment_intent = stripe.PaymentIntent.create(
         amount=amount_cents,
         currency='eur',
-        application_fee_amount=application_fee,
-        transfer_data={
-            'destination': stripe_account.stripe_account_id,
-        },
         metadata={
             'contribution_id': str(contribution.id),
             'gift_list_id': str(contribution.gift_list.id),
             'jeweler_id': str(jeweler.id),
-        }
+            'contributor_name': contribution.contributor_name,
+            'contributor_email': contribution.contributor_email,
+            'white_label_mode': 'true',
+        },
+        description=f'Contributo per {contribution.gift_list.title} - {contribution.contributor_name}'
     )
     
     # Save payment intent to database
@@ -86,10 +76,10 @@ def create_payment_intent_for_contribution(contribution):
         currency='EUR',
         status=payment_intent.status,
         client_secret=payment_intent.client_secret,
-        application_fee_amount=Decimal(application_fee) / 100,
+        application_fee_amount=Decimal('0.00'),  # No platform fees in white label mode
         metadata={
-            'platform_fee_percentage': float(platform_settings.platform_fee_percentage),
-            'platform_fee_fixed': float(platform_settings.platform_fee_fixed),
+            'white_label_mode': True,
+            'direct_payment': True,
         }
     )
     

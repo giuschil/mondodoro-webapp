@@ -4,13 +4,13 @@ import Button from '@/components/ui/Button';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50">
+    <div className="min-h-screen bg-gradient-to-br from-gold-50 to-secondary-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Sparkles className="h-8 w-8 text-primary-600" />
+              <Sparkles className="h-8 w-8 text-gold-600" />
               <span className="ml-2 text-2xl font-bold text-secondary-900">Mondodoro</span>
             </div>
             <div className="flex items-center space-x-4">
@@ -30,7 +30,7 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-secondary-900 mb-6">
             Liste Regalo per
-            <span className="text-primary-600 block">Gioiellerie</span>
+            <span className="text-gold-600 block">Gioiellerie</span>
           </h1>
           <p className="text-xl text-secondary-600 mb-8 max-w-2xl mx-auto">
             Crea liste regalo e collette online per la tua gioielleria. 
@@ -67,8 +67,8 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="text-center p-6">
-              <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Gift className="h-8 w-8 text-primary-600" />
+              <div className="bg-gold-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                                  <Gift className="h-8 w-8 text-gold-600" />
               </div>
               <h3 className="text-xl font-semibold text-secondary-900 mb-2">
                 Crea Liste Regalo
@@ -79,8 +79,8 @@ export default function HomePage() {
             </div>
 
             <div className="text-center p-6">
-              <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-primary-600" />
+              <div className="bg-gold-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <Users className="h-8 w-8 text-gold-600" />
               </div>
               <h3 className="text-xl font-semibold text-secondary-900 mb-2">
                 Condividi il Link
@@ -91,8 +91,8 @@ export default function HomePage() {
             </div>
 
             <div className="text-center p-6">
-              <div className="bg-primary-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <CreditCard className="h-8 w-8 text-primary-600" />
+              <div className="bg-gold-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <CreditCard className="h-8 w-8 text-gold-600" />
               </div>
               <h3 className="text-xl font-semibold text-secondary-900 mb-2">
                 Pagamenti Sicuri
@@ -115,28 +115,28 @@ export default function HomePage() {
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <Shield className="h-6 w-6 text-primary-600 mr-3 mt-1 flex-shrink-0" />
+                  <Shield className="h-6 w-6 text-gold-600 mr-3 mt-1 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-secondary-900">Sicurezza Garantita</h3>
                     <p className="text-secondary-600">Tutti i pagamenti sono processati in modo sicuro tramite Stripe.</p>
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <Heart className="h-6 w-6 text-primary-600 mr-3 mt-1 flex-shrink-0" />
+                  <Heart className="h-6 w-6 text-gold-600 mr-3 mt-1 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-secondary-900">Facile da Usare</h3>
                     <p className="text-secondary-600">Interfaccia intuitiva sia per gioiellieri che per contributori.</p>
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <CreditCard className="h-6 w-6 text-primary-600 mr-3 mt-1 flex-shrink-0" />
+                  <CreditCard className="h-6 w-6 text-gold-600 mr-3 mt-1 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-secondary-900">Commissioni Trasparenti</h3>
                     <p className="text-secondary-600">Fee chiare e competitive per ogni transazione.</p>
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <Users className="h-6 w-6 text-primary-600 mr-3 mt-1 flex-shrink-0" />
+                  <Users className="h-6 w-6 text-gold-600 mr-3 mt-1 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-secondary-900">Dashboard Completa</h3>
                     <p className="text-secondary-600">Monitora i contributi e gestisci le tue liste in tempo reale.</p>
@@ -170,7 +170,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center mb-4">
-                <Sparkles className="h-6 w-6 text-primary-400" />
+                <Sparkles className="h-6 w-6 text-gold-400" />
                 <span className="ml-2 text-xl font-bold">Mondodoro</span>
               </div>
               <p className="text-secondary-300">

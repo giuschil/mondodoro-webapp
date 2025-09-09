@@ -26,6 +26,14 @@ interface GiftListItem {
   order: number;
 }
 
+interface GiftListProduct {
+  name: string;
+  description: string;
+  price: number;
+  image_url: string;
+  order: number;
+}
+
 export default function NewGiftListPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -33,7 +41,10 @@ export default function NewGiftListPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    list_type: 'money_collection' as 'money_collection' | 'product_list',
     target_amount: '',
+    fixed_contribution_amount: '',
+    max_contributors: '',
     status: 'draft',
     is_public: true,
     allow_anonymous_contributions: true,
@@ -42,6 +53,7 @@ export default function NewGiftListPage() {
   });
   
   const [items, setItems] = useState<GiftListItem[]>([]);
+  const [products, setProducts] = useState<GiftListProduct[]>([]);
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -222,6 +234,70 @@ export default function NewGiftListPage() {
               />
             </div>
 
+            {/* List Type Selection */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-secondary-700 mb-4">
+                Tipo di Lista Regalo
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div 
+                  className={`relative rounded-lg border-2 p-4 cursor-pointer transition-colors ${
+                    formData.list_type === 'money_collection' 
+                      ? 'border-gold-500 bg-gold-50' 
+                      : 'border-secondary-200 hover:border-secondary-300'
+                  }`}
+                  onClick={() => setFormData(prev => ({ ...prev, list_type: 'money_collection' }))}
+                >
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      name="list_type"
+                      value="money_collection"
+                      checked={formData.list_type === 'money_collection'}
+                      onChange={handleInputChange}
+                      className="h-4 w-4 text-gold-600 focus:ring-gold-500 border-secondary-300"
+                    />
+                    <div className="ml-3">
+                      <label className="text-sm font-medium text-secondary-900 cursor-pointer">
+                        Raccolta Soldi
+                      </label>
+                      <p className="text-xs text-secondary-600">
+                        I contributori inviano un importo fisso per raggiungere un obiettivo comune
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div 
+                  className={`relative rounded-lg border-2 p-4 cursor-pointer transition-colors ${
+                    formData.list_type === 'product_list' 
+                      ? 'border-gold-500 bg-gold-50' 
+                      : 'border-secondary-200 hover:border-secondary-300'
+                  }`}
+                  onClick={() => setFormData(prev => ({ ...prev, list_type: 'product_list' }))}
+                >
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      name="list_type"
+                      value="product_list"
+                      checked={formData.list_type === 'product_list'}
+                      onChange={handleInputChange}
+                      className="h-4 w-4 text-gold-600 focus:ring-gold-500 border-secondary-300"
+                    />
+                    <div className="ml-3">
+                      <label className="text-sm font-medium text-secondary-900 cursor-pointer">
+                        Lista Prodotti
+                      </label>
+                      <p className="text-xs text-secondary-600">
+                        I contributori scelgono e pagano prodotti specifici dalla lista
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-secondary-700 mb-1">
                 Descrizione
@@ -251,6 +327,36 @@ export default function NewGiftListPage() {
               placeholder="0.00"
               required
             />
+
+            {/* Money Collection Specific Fields */}
+            {formData.list_type === 'money_collection' && (
+              <>
+                <Input
+                  label="Importo Fisso per Contributore"
+                  name="fixed_contribution_amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.fixed_contribution_amount}
+                  onChange={handleInputChange}
+                  error={errors.fixed_contribution_amount}
+                  placeholder="10.00"
+                  helpText="Importo che ogni contributore dovrà pagare (opzionale)"
+                />
+
+                <Input
+                  label="Numero Massimo Contributori"
+                  name="max_contributors"
+                  type="number"
+                  min="1"
+                  value={formData.max_contributors}
+                  onChange={handleInputChange}
+                  error={errors.max_contributors}
+                  placeholder="10"
+                  helpText="Limite massimo di persone che possono contribuire (opzionale)"
+                />
+              </>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-secondary-700 mb-1">

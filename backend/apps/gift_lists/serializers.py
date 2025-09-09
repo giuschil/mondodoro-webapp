@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
-from .models import GiftList, GiftListItem, Contribution
+from .models import GiftList, GiftListItem, GiftListProduct, Contribution
 
 
 class GiftListItemSerializer(serializers.ModelSerializer):
@@ -19,17 +19,34 @@ class GiftListItemSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'quantity_contributed', 'created_at', 'updated_at']
 
 
+class GiftListProductSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Gift List Products
+    """
+    is_available = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = GiftListProduct
+        fields = [
+            'id', 'name', 'description', 'price', 'image_url',
+            'status', 'order', 'purchased_by', 'purchased_at',
+            'is_available', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'purchased_by', 'purchased_at', 'created_at', 'updated_at']
+
+
 class ContributionSerializer(serializers.ModelSerializer):
     """
     Serializer for Contributions
     """
     display_name = serializers.ReadOnlyField()
+    product = GiftListProductSerializer(read_only=True)
     
     class Meta:
         model = Contribution
         fields = [
             'id', 'contributor_name', 'contributor_email', 'contributor_message',
-            'is_anonymous', 'amount', 'payment_status', 'display_name',
+            'is_anonymous', 'amount', 'product', 'payment_status', 'display_name',
             'created_at', 'completed_at'
         ]
         read_only_fields = [
@@ -43,6 +60,7 @@ class GiftListSerializer(serializers.ModelSerializer):
     Serializer for Gift Lists
     """
     items = GiftListItemSerializer(many=True, read_only=True)
+    products = GiftListProductSerializer(many=True, read_only=True)
     contributions = ContributionSerializer(many=True, read_only=True)
     jeweler_name = serializers.CharField(source='jeweler.get_full_name', read_only=True)
     business_name = serializers.CharField(source='jeweler.business_name', read_only=True)
@@ -55,9 +73,10 @@ class GiftListSerializer(serializers.ModelSerializer):
     class Meta:
         model = GiftList
         fields = [
-            'id', 'title', 'description', 'target_amount', 'status',
+            'id', 'title', 'description', 'list_type', 'target_amount', 
+            'fixed_contribution_amount', 'max_contributors', 'status',
             'is_public', 'allow_anonymous_contributions', 'start_date', 'end_date',
-            'cover_image', 'jeweler_name', 'business_name', 'items', 'contributions',
+            'cover_image', 'jeweler_name', 'business_name', 'items', 'products', 'contributions',
             'total_contributions', 'progress_percentage', 'contributors_count',
             'is_completed', 'public_url', 'created_at', 'updated_at'
         ]
@@ -86,22 +105,30 @@ class GiftListCreateSerializer(serializers.ModelSerializer):
     Serializer for creating Gift Lists
     """
     items = GiftListItemSerializer(many=True, required=False)
+    products = GiftListProductSerializer(many=True, required=False)
     
     class Meta:
         model = GiftList
         fields = [
-            'title', 'description', 'target_amount', 'status',
+            'title', 'description', 'list_type', 'target_amount', 
+            'fixed_contribution_amount', 'max_contributors', 'status',
             'is_public', 'allow_anonymous_contributions', 'start_date', 'end_date',
-            'cover_image', 'items'
+            'cover_image', 'items', 'products'
         ]
     
     def create(self, validated_data):
-        """Create gift list with items"""
+        """Create gift list with items and products"""
         items_data = validated_data.pop('items', [])
+        products_data = validated_data.pop('products', [])
         gift_list = GiftList.objects.create(**validated_data)
         
+        # Create items (legacy support)
         for item_data in items_data:
             GiftListItem.objects.create(gift_list=gift_list, **item_data)
+        
+        # Create products
+        for product_data in products_data:
+            GiftListProduct.objects.create(gift_list=gift_list, **product_data)
         
         return gift_list
     
@@ -124,6 +151,7 @@ class GiftListPublicSerializer(serializers.ModelSerializer):
     Serializer for public gift list view (limited information)
     """
     items = GiftListItemSerializer(many=True, read_only=True)
+    products = GiftListProductSerializer(many=True, read_only=True)
     recent_contributions = serializers.SerializerMethodField()
     jeweler_name = serializers.CharField(source='jeweler.get_full_name', read_only=True)
     business_name = serializers.CharField(source='jeweler.business_name', read_only=True)
@@ -135,8 +163,9 @@ class GiftListPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = GiftList
         fields = [
-            'id', 'title', 'description', 'target_amount',
-            'cover_image', 'jeweler_name', 'business_name', 'items',
+            'id', 'title', 'description', 'list_type', 'target_amount',
+            'fixed_contribution_amount', 'max_contributors',
+            'cover_image', 'jeweler_name', 'business_name', 'items', 'products',
             'recent_contributions', 'total_contributions', 'progress_percentage',
             'contributors_count', 'is_completed', 'end_date'
         ]

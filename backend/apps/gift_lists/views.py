@@ -20,7 +20,7 @@ class IsJewelerOrReadOnly(permissions.BasePermission):
     """
     
     def has_permission(self, request, view):
-        if request.method in permissions.READONLY_METHODS:
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
             return True
         
         return (
@@ -30,7 +30,7 @@ class IsJewelerOrReadOnly(permissions.BasePermission):
         )
     
     def has_object_permission(self, request, view, obj):
-        if request.method in permissions.READONLY_METHODS:
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
             return True
         
         return obj.jeweler == request.user
@@ -79,6 +79,18 @@ class GiftListListCreateView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save(jeweler=self.request.user)
+    
+    def create(self, request, *args, **kwargs):
+        """Create gift list and return full serialized data"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Return the full gift list data with ID
+        instance = serializer.instance
+        output_serializer = GiftListSerializer(instance)
+        headers = self.get_success_headers(serializer.data)
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 @extend_schema_view(
@@ -273,6 +285,18 @@ class ContributionListCreateView(generics.ListCreateAPIView):
             status=GiftList.Status.ACTIVE
         )
         serializer.save(gift_list=gift_list)
+    
+    def create(self, request, *args, **kwargs):
+        """Create contribution and return full serialized data"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Return the full contribution data with ID
+        instance = serializer.instance
+        output_serializer = ContributionSerializer(instance)
+        headers = self.get_success_headers(serializer.data)
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 @extend_schema(

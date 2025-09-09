@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { Sparkles, Eye, EyeOff, User, Store } from 'lucide-react';
 
-export default function RegisterPage() {
+function RegisterContent() {
   const searchParams = useSearchParams();
   const initialRole = searchParams.get('role') as 'jeweler' | 'guest' || 'guest';
 
@@ -43,6 +43,15 @@ export default function RegisterPage() {
     }
   };
 
+  const isStrongPassword = (password: string) => {
+    // Min 8 chars, at least 1 lowercase, 1 uppercase, 1 number
+    const lengthOk = password.length >= 8;
+    const lowerOk = /[a-z]/.test(password);
+    const upperOk = /[A-Z]/.test(password);
+    const digitOk = /\d/.test(password);
+    return lengthOk && lowerOk && upperOk && digitOk;
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -55,6 +64,10 @@ export default function RegisterPage() {
 
     if (formData.password !== formData.password_confirm) {
       newErrors.password_confirm = 'Le password non coincidono';
+    }
+
+    if (!isStrongPassword(formData.password)) {
+      newErrors.password = 'La password deve avere almeno 8 caratteri, con maiuscole, minuscole e numeri';
     }
 
     if (formData.role === 'jeweler') {
@@ -84,12 +97,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gold-50 to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center">
-            <Sparkles className="h-12 w-12 text-primary-600" />
+            <Sparkles className="h-12 w-12 text-gold-600" />
             <span className="ml-2 text-3xl font-bold text-secondary-900">Mondodoro</span>
           </Link>
           <h2 className="mt-6 text-3xl font-bold text-secondary-900">
@@ -97,7 +110,7 @@ export default function RegisterPage() {
           </h2>
           <p className="mt-2 text-sm text-secondary-600">
             Hai già un account?{' '}
-            <Link href="/login" className="font-medium text-primary-600 hover:text-primary-500">
+            <Link href="/login" className="font-medium text-gold-600 hover:text-gold-500">
               Accedi qui
             </Link>
           </p>
@@ -112,11 +125,11 @@ export default function RegisterPage() {
               onClick={() => setFormData(prev => ({ ...prev, role: 'jeweler' }))}
               className={`p-4 rounded-lg border-2 transition-colors ${
                 formData.role === 'jeweler'
-                  ? 'border-primary-500 bg-primary-50'
+                  ? 'border-gold-500 bg-gold-50'
                   : 'border-secondary-200 hover:border-secondary-300'
               }`}
             >
-              <Store className="h-8 w-8 mx-auto mb-2 text-primary-600" />
+              <Store className="h-8 w-8 mx-auto mb-2 text-gold-600" />
               <h4 className="font-medium text-secondary-900">Gioielliere</h4>
               <p className="text-sm text-secondary-600">Crea e gestisci liste regalo</p>
             </button>
@@ -126,11 +139,11 @@ export default function RegisterPage() {
               onClick={() => setFormData(prev => ({ ...prev, role: 'guest' }))}
               className={`p-4 rounded-lg border-2 transition-colors ${
                 formData.role === 'guest'
-                  ? 'border-primary-500 bg-primary-50'
+                  ? 'border-gold-500 bg-gold-50'
                   : 'border-secondary-200 hover:border-secondary-300'
               }`}
             >
-              <User className="h-8 w-8 mx-auto mb-2 text-primary-600" />
+              <User className="h-8 w-8 mx-auto mb-2 text-gold-600" />
               <h4 className="font-medium text-secondary-900">Invitato</h4>
               <p className="text-sm text-secondary-600">Contribuisci alle liste regalo</p>
             </button>
@@ -178,6 +191,7 @@ export default function RegisterPage() {
                     placeholder="Crea una password"
                     required
                   />
+                  <p className="mt-1 text-xs text-secondary-500">Min 8 caratteri, includi maiuscole, minuscole e numeri</p>
                   <button
                     type="button"
                     className="absolute right-3 top-8 text-secondary-400 hover:text-secondary-600"
@@ -297,11 +311,11 @@ export default function RegisterPage() {
             {/* Terms */}
             <p className="text-xs text-secondary-500 text-center">
               Registrandoti accetti i nostri{' '}
-              <Link href="/terms" className="text-primary-600 hover:text-primary-500">
+              <Link href="/terms" className="text-gold-600 hover:text-gold-500">
                 Termini di Servizio
               </Link>{' '}
               e la{' '}
-              <Link href="/privacy" className="text-primary-600 hover:text-primary-500">
+              <Link href="/privacy" className="text-gold-600 hover:text-gold-500">
                 Privacy Policy
               </Link>
             </p>
@@ -309,5 +323,20 @@ export default function RegisterPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="mt-4 text-secondary-600">Caricamento...</p>
+        </div>
+      </div>
+    }>
+      <RegisterContent />
+    </Suspense>
   );
 }

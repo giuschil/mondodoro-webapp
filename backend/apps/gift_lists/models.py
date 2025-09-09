@@ -18,12 +18,24 @@ class GiftList(models.Model):
         COMPLETED = 'completed', _('Completata')
         CANCELLED = 'cancelled', _('Annullata')
     
+    class ListType(models.TextChoices):
+        MONEY_COLLECTION = 'money_collection', _('Raccolta Soldi')
+        PRODUCT_LIST = 'product_list', _('Lista Prodotti')
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     jeweler = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='gift_lists',
         help_text=_('Jeweler who created this gift list')
+    )
+    
+    # List type
+    list_type = models.CharField(
+        max_length=20,
+        choices=ListType.choices,
+        default=ListType.MONEY_COLLECTION,
+        help_text=_('Type of gift list')
     )
     
     # Basic information
@@ -41,6 +53,21 @@ class GiftList(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(Decimal('0.01'))],
         help_text=_('Target amount to raise')
+    )
+    
+    # Fixed contribution settings (for MONEY_COLLECTION type)
+    fixed_contribution_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal('0.01'))],
+        help_text=_('Fixed contribution amount (for money collection lists)')
+    )
+    max_contributors = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text=_('Maximum number of contributors (for money collection lists)')
     )
     
     # Settings
@@ -209,6 +236,14 @@ class Contribution(models.Model):
         related_name='contributions',
         help_text=_('Gift list this contribution is for')
     )
+    product = models.ForeignKey(
+        'GiftListProduct',
+        on_delete=models.CASCADE,
+        related_name='contributions',
+        null=True,
+        blank=True,
+        help_text=_('Specific product being purchased (for product lists)')
+    )
     
     # Contributor information
     contributor_name = models.CharField(
@@ -279,3 +314,86 @@ class Contribution(models.Model):
         if self.is_anonymous:
             return _('Anonymous')
         return self.contributor_name
+
+
+class GiftListProduct(models.Model):
+    """
+    Product in a gift list (for PRODUCT_LIST type lists)
+    """
+    
+    class Status(models.TextChoices):
+        AVAILABLE = 'available', _('Disponibile')
+        PURCHASED = 'purchased', _('Acquistato')
+        RESERVED = 'reserved', _('Riservato')
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    gift_list = models.ForeignKey(
+        GiftList,
+        on_delete=models.CASCADE,
+        related_name='products',
+        help_text=_('Gift list this product belongs to')
+    )
+    
+    # Product information
+    name = models.CharField(
+        max_length=255,
+        help_text=_('Product name')
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text=_('Product description')
+    )
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.01'))],
+        help_text=_('Product price')
+    )
+    image_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text=_('Product image URL')
+    )
+    
+    # Status and ordering
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.AVAILABLE,
+        help_text=_('Product status')
+    )
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text=_('Display order')
+    )
+    
+    # Purchase information
+    purchased_by = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text=_('Name of person who purchased this product')
+    )
+    purchased_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=_('When this product was purchased')
+    )
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order', 'created_at']
+        verbose_name = _('Gift List Product')
+        verbose_name_plural = _('Gift List Products')
+    
+    def __str__(self):
+        return f"{self.name} - {self.price}€ ({self.get_status_display()})"
+    
+    @property
+    def is_available(self):
+        """Check if product is available for purchase"""
+        return self.status == self.Status.AVAILABLE
