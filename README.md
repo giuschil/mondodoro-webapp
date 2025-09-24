@@ -208,3 +208,4 @@ API documentation will be available at `/api/docs/` when the backend is running.
 ## 📝 License
 
 This project is proprietary software for Mondodoro.
+# Test auto-deploy - Wed Sep 24 23:22:33 CEST 2025
