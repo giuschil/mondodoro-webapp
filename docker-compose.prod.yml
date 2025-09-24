@@ -10,8 +10,8 @@ services:
     ports:
       - "8001:8000"  # Porta dedicata per regalino
     environment:
-      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@host.docker.internal:5432/regalino
-      - REDIS_URL=redis://:${REDIS_PASSWORD}@host.docker.internal:6379/0
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@172.17.0.1:5432/regalino
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@172.17.0.1:6379/0
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=False
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
