@@ -10,8 +10,8 @@ services:
     ports:
       - "8001:8000"  # Porta dedicata per regalino
     environment:
-      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@host.docker.internal:5432/regalino
-      - REDIS_URL=redis://:${REDIS_PASSWORD}@host.docker.internal:6379/0
+      - DATABASE_URL=postgresql://mondodoro_user:${DB_PASSWORD}@postgres:5432/mondodoro
+      - REDIS_URL=redis://redis:6379
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=False
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
@@ -20,8 +20,9 @@ services:
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
+    depends_on:
+      - postgres
+      - redis
     command: >
       sh -c "python manage.py collectstatic --noinput &&
              python manage.py migrate --noinput &&
@@ -57,8 +58,29 @@ services:
       - backend
       - frontend
 
+  postgres:
+    image: postgres:15-alpine
+    container_name: mondodoro_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=mondodoro
+      - POSTGRES_USER=mondodoro_user
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: mondodoro_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
 volumes:
   static_volume:
     name: regalino_static
   media_volume:
     name: regalino_media
+  postgres_data:
