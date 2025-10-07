@@ -62,11 +62,14 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} autoComplete="on">
           <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
             <Input
               label="Email"
               type="email"
+              name="email"
+              id="email"
+              autoComplete="username email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={errors.email}
@@ -78,6 +81,9 @@ export default function LoginPage() {
               <Input
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
+                name="password"
+                id="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 error={errors.password}
@@ -88,6 +94,7 @@ export default function LoginPage() {
                 type="button"
                 className="absolute right-3 top-8 text-secondary-400 hover:text-secondary-600"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Nascondi password' : 'Mostra password'}
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>

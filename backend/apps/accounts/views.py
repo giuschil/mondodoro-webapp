@@ -5,6 +5,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from .models import User
 from .serializers import (
@@ -20,6 +21,7 @@ from .serializers import (
         tags=["Authentication"]
     )
 )
+@method_decorator(csrf_exempt, name='dispatch')
 class RegisterView(generics.CreateAPIView):
     """
     User registration endpoint
@@ -47,6 +49,7 @@ class RegisterView(generics.CreateAPIView):
     description="Authenticate user and return token",
     tags=["Authentication"]
 )
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def login_view(request):

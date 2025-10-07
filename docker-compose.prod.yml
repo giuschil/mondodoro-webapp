@@ -10,7 +10,7 @@ services:
     ports:
       - "8001:8000"  # Porta dedicata per regalino
     environment:
-      - DATABASE_URL=postgresql://mondodoro_user:${DB_PASSWORD}@postgres:5432/mondodoro
+      - DATABASE_URL=postgresql://regalino_user:${DB_PASSWORD}@postgres:5432/regalino
       - REDIS_URL=redis://redis:6379
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=False
@@ -50,21 +50,23 @@ services:
     container_name: regalino_nginx
     restart: unless-stopped
     ports:
-      - "8080:80"  # Porta temporanea per test
+      - "8080:80"   # HTTP (redirect to HTTPS)
+      - "8443:443"  # HTTPS
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+      - ./nginx/ssl:/etc/nginx/ssl:ro  # Mount SSL certificates
     depends_on:
       - backend
       - frontend
 
   postgres:
     image: postgres:15-alpine
-    container_name: mondodoro_postgres
+    container_name: regalino_postgres
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=mondodoro
-      - POSTGRES_USER=mondodoro_user
+      - POSTGRES_DB=regalino
+      - POSTGRES_USER=regalino_user
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -73,7 +75,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: mondodoro_redis
+    container_name: regalino_redis
     restart: unless-stopped
     ports:
       - "6379:6379"

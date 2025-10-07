@@ -178,3 +178,9 @@ temp/
 *.njsproj
 *.sln
 *.sw?
+
+# Sensitive configuration files
+remote_config
+*.key
+*.pem
+*.crt

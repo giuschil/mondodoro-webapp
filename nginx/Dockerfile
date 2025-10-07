@@ -7,8 +7,8 @@ COPY mondodoro.conf /etc/nginx/conf.d/default.conf
 # Crea directory per static e media files
 RUN mkdir -p /app/staticfiles /app/media
 
-# Esponi porta 80
-EXPOSE 80
+# Esponi porte 80 e 443
+EXPOSE 80 443
 
 # Comando di default
 CMD ["nginx", "-g", "daemon off;"]

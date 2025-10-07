@@ -177,7 +177,7 @@ export default function NewGiftListPage() {
     }
   };
 
-  if (user?.role !== 'jeweler') {
+  if (user?.role !== 'jeweler' && user?.role !== 'admin') {
     return (
       <DashboardLayout>
         <div className="text-center py-12">

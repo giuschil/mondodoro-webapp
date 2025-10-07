@@ -191,7 +191,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -211,9 +210,21 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://168.231.85.166:8080",
+    "http://168.231.85.166:3001",
+    "https://168.231.85.166:8443",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://168.231.85.166:8080",
+    "http://168.231.85.166:3001",
+    "https://168.231.85.166:8443",
+]
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'

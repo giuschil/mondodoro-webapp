@@ -117,7 +117,7 @@ export default function GiftListDetailPage() {
     );
   };
 
-  if (user?.role !== 'jeweler') {
+  if (user?.role !== 'jeweler' && user?.role !== 'admin') {
     return (
       <DashboardLayout>
         <div className="text-center py-12">
@@ -125,7 +125,7 @@ export default function GiftListDetailPage() {
             Accesso Negato
           </h1>
           <p className="text-secondary-600">
-            Questa sezione è riservata ai gioiellieri.
+            Questa sezione è riservata ai gioiellieri e agli amministratori.
           </p>
         </div>
       </DashboardLayout>

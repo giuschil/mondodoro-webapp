@@ -54,12 +54,12 @@ export default function DashboardPage() {
       }
     };
 
-    if (user?.role === 'jeweler') {
+    if (user?.role === 'jeweler' || user?.role === 'admin') {
       fetchData();
     }
   }, [user]);
 
-  if (user?.role !== 'jeweler') {
+  if (user?.role !== 'jeweler' && user?.role !== 'admin') {
     return (
       <DashboardLayout>
         <div className="text-center py-12">
@@ -67,7 +67,7 @@ export default function DashboardPage() {
             Accesso Negato
           </h1>
           <p className="text-secondary-600">
-            Questa dashboard è riservata ai gioiellieri.
+            Questa dashboard è riservata ai gioiellieri e agli amministratori.
           </p>
         </div>
       </DashboardLayout>
@@ -80,10 +80,7 @@ export default function DashboardPage() {
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-secondary-900">
-              Benvenuto, {user.first_name}!
-            </h1>
-            <p className="mt-1 text-sm text-secondary-600">
+            <p className="text-sm text-secondary-600">
               Ecco una panoramica della tua attività su Mondodoro
             </p>
           </div>
