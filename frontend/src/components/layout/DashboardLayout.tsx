@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
             <div className="flex flex-shrink-0 items-center px-4">
               <Sparkles className="h-8 w-8 text-gold-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">Mondodoro</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">ListDreams</span>
             </div>
             <nav className="mt-5 space-y-1 px-2">
               {navigation.map((item) => (
@@ -71,7 +71,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
             <div className="flex flex-shrink-0 items-center px-4">
               <Sparkles className="h-8 w-8 text-gold-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">Mondodoro</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">ListDreams</span>
             </div>
             <nav className="mt-5 flex-1 space-y-1 px-2">
               {navigation.map((item) => (

@@ -11,7 +11,7 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Sparkles className="h-8 w-8 text-gold-600" />
-              <span className="ml-2 text-2xl font-bold text-secondary-900">Mondodoro</span>
+              <span className="ml-2 text-2xl font-bold text-secondary-900">ListDreams</span>
             </div>
             <div className="flex items-center space-x-4">
               <Link href="/login">
@@ -111,7 +111,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl font-bold text-secondary-900 mb-6">
-                Perché Scegliere Mondodoro?
+                Perché Scegliere ListDreams?
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start">
@@ -171,7 +171,7 @@ export default function HomePage() {
             <div>
               <div className="flex items-center mb-4">
                 <Sparkles className="h-6 w-6 text-gold-400" />
-                <span className="ml-2 text-xl font-bold">Mondodoro</span>
+                <span className="ml-2 text-xl font-bold">ListDreams</span>
               </div>
               <p className="text-secondary-300">
                 La piattaforma per liste regalo dedicate alle gioiellerie.
@@ -203,7 +203,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-secondary-700 mt-8 pt-8 text-center text-secondary-300">
-            <p>&copy; 2024 Mondodoro. Tutti i diritti riservati.</p>
+            <p>&copy; 2024 ListDreams. Tutti i diritti riservati.</p>
           </div>
         </div>
       </footer>

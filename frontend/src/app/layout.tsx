@@ -7,12 +7,12 @@ import { AuthProvider } from '@/lib/auth-context';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Mondodoro - Liste Regalo per Gioiellerie',
+  title: 'ListDreams - Liste Regalo per Gioiellerie',
   description: 'Piattaforma per liste regalo e collette online dedicate a gioiellerie',
   keywords: 'liste regalo, gioiellerie, collette online, regali, matrimonio',
-  authors: [{ name: 'Mondodoro' }],
+  authors: [{ name: 'ListDreams' }],
   openGraph: {
-    title: 'Mondodoro - Liste Regalo per Gioiellerie',
+    title: 'ListDreams - Liste Regalo per Gioiellerie',
     description: 'Crea liste regalo e collette online per la tua gioielleria',
     type: 'website',
   },
@@ -25,7 +25,31 @@ export default function RootLayout({
 }) {
   return (
     <html lang="it">
+      <head>
+        {/* Google Tag Manager */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W2X4BVPQ');`,
+          }}
+        />
+        {/* End Google Tag Manager */}
+      </head>
       <body className={inter.className}>
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-W2X4BVPQ"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
+        
         <AuthProvider>
           {children}
           <Toaster

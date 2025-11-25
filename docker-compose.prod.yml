@@ -5,6 +5,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
+      args:
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
     container_name: regalino_backend
     restart: unless-stopped
     ports:
@@ -17,6 +19,7 @@ services:
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -32,6 +35,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
+      args:
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
     container_name: regalino_frontend
     restart: unless-stopped
     ports:

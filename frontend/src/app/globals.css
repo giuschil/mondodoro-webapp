@@ -60,3 +60,19 @@ body {
     @apply rounded-lg border border-secondary-200 bg-white text-secondary-900 shadow-sm;
   }
 }
+
+/* Force dark text in all form fields regardless of color scheme */
+input, textarea, select {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Ensure option elements are also dark */
+select option {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+}

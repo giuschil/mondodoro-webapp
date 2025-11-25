@@ -96,6 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('user');
     setUser(null);
     toast.success('Logout effettuato con successo');
+    // Redirect to homepage after logout
+    window.location.href = '/';
   };
 
   const updateUser = (userData: Partial<User>) => {

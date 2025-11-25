@@ -171,7 +171,24 @@ export default function NewGiftListPage() {
       router.push(`/dashboard/gift-lists/${newGiftList.id}`);
     } catch (error: any) {
       console.error('Error creating gift list:', error);
+      
+      // Check for specific error messages
+      if (error.response?.data?.non_field_errors) {
+        const errorMsg = error.response.data.non_field_errors[0];
+        if (errorMsg.includes('Start date cannot be in the past')) {
+          toast.error('La data di inizio non può essere nel passato. Seleziona una data futura.');
+        } else if (errorMsg.includes('End date must be after start date')) {
+          toast.error('La data di fine deve essere successiva alla data di inizio.');
+        } else {
+          toast.error(errorMsg);
+        }
+      } else if (error.response?.data) {
+        // Show first validation error
+        const firstError = Object.values(error.response.data)[0];
+        toast.error(Array.isArray(firstError) ? firstError[0] : firstError);
+      } else {
       toast.error('Errore durante la creazione della lista regalo');
+      }
     } finally {
       setLoading(false);
     }
@@ -307,8 +324,9 @@ export default function NewGiftListPage() {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full rounded-md border border-secondary-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full rounded-md border border-secondary-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 bg-white"
                 placeholder="Descrizione della lista regalo..."
+                style={{ color: '#111827', backgroundColor: '#ffffff' }}
               />
               {errors.description && (
                 <p className="mt-1 text-sm text-red-600">{errors.description}</p>
@@ -366,30 +384,49 @@ export default function NewGiftListPage() {
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
-                className="h-10 w-full rounded-md border border-secondary-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="h-10 w-full rounded-md border border-secondary-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
+                style={{ color: '#111827', backgroundColor: '#ffffff' }}
               >
                 <option value="draft">Bozza</option>
                 <option value="active">Attiva</option>
               </select>
             </div>
 
-            <Input
-              label="Data Inizio (opzionale)"
+            <div>
+              <label className="block text-sm font-medium text-secondary-700 mb-1">
+                Data Inizio (opzionale)
+              </label>
+              <input
+                type="datetime-local"
               name="start_date"
-              type="datetime-local"
               value={formData.start_date}
               onChange={handleInputChange}
-              error={errors.start_date}
-            />
+                min={new Date().toISOString().slice(0, 16)}
+                className="h-10 w-full rounded-md border border-secondary-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
+                style={{ color: '#111827', backgroundColor: '#ffffff' }}
+              />
+              {errors.start_date && (
+                <p className="mt-1 text-sm text-red-600">{errors.start_date}</p>
+              )}
+            </div>
 
-            <Input
-              label="Data Fine (opzionale)"
+            <div>
+              <label className="block text-sm font-medium text-secondary-700 mb-1">
+                Data Fine (opzionale)
+              </label>
+              <input
+                type="datetime-local"
               name="end_date"
-              type="datetime-local"
               value={formData.end_date}
               onChange={handleInputChange}
-              error={errors.end_date}
+                min={formData.start_date || new Date().toISOString().slice(0, 16)}
+                className="h-10 w-full rounded-md border border-secondary-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900"
+                style={{ color: '#111827', backgroundColor: '#ffffff' }}
             />
+              {errors.end_date && (
+                <p className="mt-1 text-sm text-red-600">{errors.end_date}</p>
+              )}
+            </div>
           </div>
 
           {/* Settings */}
@@ -455,11 +492,12 @@ export default function NewGiftListPage() {
           </div>
         </div>
 
-        {/* Items */}
+        {/* Items - Only show for product_list type */}
+        {formData.list_type === 'product_list' && (
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-medium text-secondary-900">
-              Prodotti nella Lista (opzionale)
+                Prodotti nella Lista
             </h2>
             <Button type="button" variant="outline" onClick={addItem}>
               <Plus className="h-4 w-4 mr-2" />
@@ -531,8 +569,9 @@ export default function NewGiftListPage() {
                         value={item.description}
                         onChange={(e) => updateItem(index, 'description', e.target.value)}
                         rows={2}
-                        className="w-full rounded-md border border-secondary-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          className="w-full rounded-md border border-secondary-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 bg-white"
                         placeholder="Descrizione prodotto..."
+                          style={{ color: '#111827', backgroundColor: '#ffffff' }}
                       />
                     </div>
                   </div>
@@ -541,6 +580,7 @@ export default function NewGiftListPage() {
             </div>
           )}
         </div>
+        )}
 
         {/* Submit */}
         <div className="flex justify-end space-x-4">

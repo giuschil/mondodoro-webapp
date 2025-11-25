@@ -37,6 +37,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lamb
 STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
 STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
+BASE_URL = config('BASE_URL', default='https://www.listdreams.it')
 
 
 # Application definition
@@ -68,7 +69,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",  # DISABLED FOR API
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -213,6 +214,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://168.231.85.166:8080",
     "http://168.231.85.166:3001",
     "https://168.231.85.166:8443",
+    "https://listdreams.it",
+    "https://www.listdreams.it",
+    "http://listdreams.it",
+    "http://www.listdreams.it",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -224,7 +229,17 @@ CSRF_TRUSTED_ORIGINS = [
     "http://168.231.85.166:8080",
     "http://168.231.85.166:3001",
     "https://168.231.85.166:8443",
+    "https://listdreams.it",
+    "https://www.listdreams.it",
+    "http://listdreams.it",
+    "http://www.listdreams.it",
 ]
+
+# CSRF Settings - Disabled for API
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False  # Disabled for development
+CSRF_USE_SESSIONS = False
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'

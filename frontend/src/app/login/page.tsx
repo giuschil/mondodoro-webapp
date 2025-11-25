@@ -48,7 +48,7 @@ export default function LoginPage() {
         <div className="text-center">
           <Link href="/" className="inline-flex items-center">
             <Sparkles className="h-12 w-12 text-primary-600" />
-            <span className="ml-2 text-3xl font-bold text-secondary-900">Mondodoro</span>
+            <span className="ml-2 text-3xl font-bold text-secondary-900">ListDreams</span>
           </Link>
           <h2 className="mt-6 text-3xl font-bold text-secondary-900">
             Accedi al tuo account

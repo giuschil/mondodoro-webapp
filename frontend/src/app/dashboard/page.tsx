@@ -59,18 +59,21 @@ export default function DashboardPage() {
     }
   }, [user]);
 
-  if (user?.role !== 'jeweler' && user?.role !== 'admin') {
+  // Redirect if not authorized
+  useEffect(() => {
+    if (user && user.role !== 'jeweler' && user.role !== 'admin') {
+      window.location.href = '/';
+    }
+  }, [user]);
+
+  if (!user || (user.role !== 'jeweler' && user.role !== 'admin')) {
     return (
-      <DashboardLayout>
-        <div className="text-center py-12">
-          <h1 className="text-2xl font-bold text-secondary-900 mb-4">
-            Accesso Negato
-          </h1>
-          <p className="text-secondary-600">
-            Questa dashboard è riservata ai gioiellieri e agli amministratori.
-          </p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gold-50 to-secondary-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-600 mx-auto mb-4"></div>
+          <p className="text-secondary-600">Caricamento...</p>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
@@ -81,7 +84,7 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center">
           <div>
             <p className="text-sm text-secondary-600">
-              Ecco una panoramica della tua attività su Mondodoro
+              Ecco una panoramica della tua attività su ListDreams
             </p>
           </div>
           <Link href="/dashboard/gift-lists/new">

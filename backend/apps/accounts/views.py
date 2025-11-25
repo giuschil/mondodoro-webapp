@@ -5,7 +5,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.middleware.csrf import get_token
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from .models import User
 from .serializers import (
@@ -196,3 +197,17 @@ def me_view(request):
     Get current user information
     """
     return Response(UserSerializer(request.user).data)
+
+@extend_schema(
+    summary="Get CSRF Token", 
+    description="Get CSRF token for subsequent requests",
+    tags=["Authentication"]
+)
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+@ensure_csrf_cookie
+def csrf_token_view(request):
+    """
+    Get CSRF token
+    """
+    return Response({'csrfToken': get_token(request)})

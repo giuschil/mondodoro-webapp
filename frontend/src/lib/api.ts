@@ -116,21 +116,17 @@ export const giftListsAPI = {
     max_contributors?: number;
     products?: any[];
   }): Promise<GiftList> => {
-    const formData = new FormData();
+    // For now, exclude cover_image and products to use JSON
+    const { cover_image, products, ...jsonData } = data;
     
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === 'cover_image' && value instanceof File) {
-        formData.append(key, value);
-      } else if (key === 'products' && Array.isArray(value)) {
-        formData.append(key, JSON.stringify(value));
-      } else if (value !== undefined && value !== null) {
-        formData.append(key, String(value));
-      }
-    });
+    // Set default values for public visibility
+    const createData = {
+      ...jsonData,
+      status: 'active',
+      is_public: true,
+    };
 
-    const response = await api.post('/gift-lists/', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const response = await api.post('/gift-lists/', createData);
     return response.data;
   },
 
@@ -170,10 +166,7 @@ export const paymentsAPI = {
   createPaymentIntent: async (data: {
     contribution_id: string;
     amount: number;
-  }): Promise<{
-    client_secret: string;
-    payment_intent_id: string;
-  }> => {
+  }): Promise<{ checkout_url: string; session_id: string }> => {
     const response = await api.post('/payments/create-payment-intent/', data);
     return response.data;
   },
@@ -182,6 +175,21 @@ export const paymentsAPI = {
     payment_intent_id: string;
   }): Promise<{ success: boolean; message: string }> => {
     const response = await api.post('/payments/confirm-payment/', data);
+    return response.data;
+  },
+
+  createStripeOnboarding: async (): Promise<{ onboarding_url: string; account_id: string }> => {
+    const response = await api.post('/payments/stripe/onboard/');
+    return response.data;
+  },
+
+  checkStripeOnboardingStatus: async (): Promise<{ 
+    success: boolean; 
+    onboarding_completed: boolean; 
+    charges_enabled: boolean; 
+    payouts_enabled: boolean 
+  }> => {
+    const response = await api.get('/payments/stripe/onboard/return/');
     return response.data;
   },
 };

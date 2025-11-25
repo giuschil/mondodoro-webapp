@@ -103,7 +103,7 @@ function RegisterContent() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center">
             <Sparkles className="h-12 w-12 text-gold-600" />
-            <span className="ml-2 text-3xl font-bold text-secondary-900">Mondodoro</span>
+            <span className="ml-2 text-3xl font-bold text-secondary-900">ListDreams</span>
           </Link>
           <h2 className="mt-6 text-3xl font-bold text-secondary-900">
             Crea il tuo account

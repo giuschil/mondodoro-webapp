@@ -10,7 +10,6 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
 import { 
   ArrowLeft,
-  Edit,
   Share2,
   Copy,
   Users,
@@ -201,12 +200,6 @@ export default function GiftListDetailPage() {
               <Share2 className="h-4 w-4 mr-2" />
               Condividi
             </Button>
-            <Link href={`/dashboard/gift-lists/${giftList.id}/edit`}>
-              <Button variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-2" />
-                Modifica
-              </Button>
-            </Link>
           </div>
         </div>
 
@@ -580,12 +573,6 @@ export default function GiftListDetailPage() {
                 <div>
                   <h4 className="text-sm font-medium text-secondary-900 mb-4">Azioni</h4>
                   <div className="flex space-x-4">
-                    <Link href={`/dashboard/gift-lists/${giftList.id}/edit`}>
-                      <Button variant="outline">
-                        <Edit className="h-4 w-4 mr-2" />
-                        Modifica Lista
-                      </Button>
-                    </Link>
                     <Button variant="outline" className="text-red-600 hover:text-red-700 border-red-300 hover:border-red-400">
                       <Trash2 className="h-4 w-4 mr-2" />
                       Elimina Lista

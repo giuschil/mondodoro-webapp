@@ -12,7 +12,6 @@ import {
   Plus, 
   Search, 
   Eye, 
-  Edit, 
   Trash2, 
   Calendar,
   Users,
@@ -46,8 +45,10 @@ export default function GiftListsPage() {
       }
     };
 
-    if (user?.role === 'jeweler') {
+    if (user?.role === 'jeweler' || user?.role === 'admin') {
       fetchGiftLists();
+    } else if (user) {
+      setLoading(false);
     }
   }, [user, searchTerm, statusFilter]);
 
@@ -275,11 +276,6 @@ export default function GiftListsPage() {
                       <Link href={`/dashboard/gift-lists/${giftList.id}`}>
                         <Button variant="ghost" size="sm" title="Visualizza dettagli">
                           <Eye className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Link href={`/dashboard/gift-lists/${giftList.id}/edit`}>
-                        <Button variant="ghost" size="sm" title="Modifica">
-                          <Edit className="h-4 w-4" />
                         </Button>
                       </Link>
                       <Button
