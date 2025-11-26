@@ -67,7 +67,7 @@ def create_stripe_checkout_session(contribution):
     # Calculate platform fee (percentage + fixed)
     platform_fee_percentage = platform_settings.platform_fee_percentage
     platform_fee_fixed = platform_settings.platform_fee_fixed
-    platform_fee_amount = (contribution.amount * platform_fee_percentage / 100) + platform_fee_fixed
+    platform_fee_amount = (Decimal(str(contribution.amount)) * platform_fee_percentage / 100) + platform_fee_fixed
     platform_fee_cents = int(platform_fee_amount * 100)
     
     # Get the base URL from settings
@@ -127,21 +127,23 @@ def create_stripe_checkout_session(contribution):
     # Create Stripe Checkout session
     checkout_session = stripe.checkout.Session.create(**checkout_params)
     
-    # Save checkout session to database
-    payment_intent_obj = PaymentIntent.objects.create(
+    # Save checkout session to database (update if exists, create if not)
+    payment_intent_obj, created = PaymentIntent.objects.update_or_create(
         contribution=contribution,
-        stripe_payment_intent_id=checkout_session.id,  # Use session ID
-        amount=contribution.amount,
-        currency='EUR',
-        status='pending',
-        client_secret=checkout_session.url,  # Use checkout URL as client_secret
-        application_fee_amount=Decimal(str(platform_fee_amount)),
-        metadata={
-            'checkout_mode': True,
-            'session_id': checkout_session.id,
-            'checkout_url': checkout_session.url,
-            'stripe_account_id': stripe_account_id,
-            'platform_fee': str(platform_fee_amount),
+        defaults={
+            'stripe_payment_intent_id': checkout_session.id,  # Use session ID
+            'amount': contribution.amount,
+            'currency': 'EUR',
+            'status': 'pending',
+            'client_secret': checkout_session.url,  # Use checkout URL as client_secret
+            'application_fee_amount': Decimal(str(platform_fee_amount)),
+            'metadata': {
+                'checkout_mode': True,
+                'session_id': checkout_session.id,
+                'checkout_url': checkout_session.url,
+                'stripe_account_id': stripe_account_id,
+                'platform_fee': str(platform_fee_amount),
+            }
         }
     )
     

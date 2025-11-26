@@ -3,6 +3,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import login, logout
+from django_ratelimit.decorators import ratelimit
+from django_ratelimit.exceptions import Ratelimited
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
@@ -51,6 +53,8 @@ class RegisterView(generics.CreateAPIView):
     tags=["Authentication"]
 )
 @csrf_exempt
+@ratelimit(key='ip', rate='5/m', method='POST', block=True)
+@ratelimit(key='post:email', rate='10/h', method='POST', block=True)
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def login_view(request):

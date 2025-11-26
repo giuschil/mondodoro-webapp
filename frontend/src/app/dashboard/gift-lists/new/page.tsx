@@ -47,6 +47,7 @@ export default function NewGiftListPage() {
     max_contributors: '',
     status: 'draft',
     is_public: true,
+    show_in_public_gallery: false,
     allow_anonymous_contributions: true,
     start_date: '',
     end_date: '',
@@ -159,12 +160,35 @@ export default function NewGiftListPage() {
     }
 
     try {
-      const giftListData = {
-        ...formData,
+      const giftListData: Record<string, any> = {
+        title: formData.title,
+        description: formData.description,
+        list_type: formData.list_type,
         target_amount: parseFloat(formData.target_amount),
-        cover_image: coverImage,
-        items: items.length > 0 ? items : undefined,
+        status: formData.status,
+        is_public: formData.is_public,
+        show_in_public_gallery: formData.show_in_public_gallery,
       };
+      
+      // Only include optional fields if they have values
+      if (formData.fixed_contribution_amount) {
+        giftListData.fixed_contribution_amount = parseFloat(formData.fixed_contribution_amount);
+      }
+      if (formData.max_contributors) {
+        giftListData.max_contributors = parseInt(formData.max_contributors);
+      }
+      if (formData.start_date) {
+        giftListData.start_date = formData.start_date;
+      }
+      if (formData.end_date) {
+        giftListData.end_date = formData.end_date;
+      }
+      if (coverImage) {
+        giftListData.cover_image = coverImage;
+      }
+      if (items.length > 0) {
+        giftListData.items = items;
+      }
 
       const newGiftList = await giftListsAPI.create(giftListData);
       toast.success('Lista regalo creata con successo!');
@@ -447,15 +471,16 @@ export default function NewGiftListPage() {
             <div className="flex items-center">
               <input
                 type="checkbox"
-                name="allow_anonymous_contributions"
-                checked={formData.allow_anonymous_contributions}
+                name="show_in_public_gallery"
+                checked={formData.show_in_public_gallery}
                 onChange={handleInputChange}
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300 rounded"
               />
               <label className="ml-2 block text-sm text-secondary-900">
-                Permetti contributi anonimi
+                Mostra nella bacheca pubblica (visibile nella pagina /lists)
               </label>
             </div>
+
           </div>
         </div>
 

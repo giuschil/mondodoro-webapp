@@ -17,7 +17,8 @@ import {
   Users,
   Euro,
   Filter,
-  ExternalLink
+  ExternalLink,
+  Pencil
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -276,6 +277,11 @@ export default function GiftListsPage() {
                       <Link href={`/dashboard/gift-lists/${giftList.id}`}>
                         <Button variant="ghost" size="sm" title="Visualizza dettagli">
                           <Eye className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Link href={`/dashboard/gift-lists/${giftList.id}/edit`}>
+                        <Button variant="ghost" size="sm" title="Modifica lista">
+                          <Pencil className="h-4 w-4" />
                         </Button>
                       </Link>
                       <Button

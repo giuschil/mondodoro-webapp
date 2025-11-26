@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
+from django_ratelimit.decorators import ratelimit
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from .models import StripeAccount, PaymentIntent, WebhookEvent, PlatformSettings
@@ -39,6 +40,9 @@ print(f"DEBUG: Stripe configured with key: {stripe.api_key[:20] if stripe.api_ke
 @permission_classes([permissions.IsAuthenticated])
 def stripe_onboard_view(request):
     """Create Stripe Connect onboarding link for jeweler"""
+    # Configure Stripe API key
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    
     user = request.user
     
     if user.role != User.UserRole.JEWELER:
@@ -73,7 +77,7 @@ def stripe_onboard_view(request):
             'account_id': stripe_account.stripe_account_id
         })
         
-    except stripe.error.StripeError as e:
+    except stripe.StripeError as e:
         return Response(
             {'error': f'Stripe error: {str(e)}'},
             status=status.HTTP_400_BAD_REQUEST
@@ -94,6 +98,9 @@ def stripe_onboard_view(request):
 @permission_classes([permissions.IsAuthenticated])
 def stripe_onboard_return_view(request):
     """Handle return from Stripe Connect onboarding and get account status"""
+    # Configure Stripe API key
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    
     user = request.user
     
     if user.role != User.UserRole.JEWELER:
@@ -160,6 +167,7 @@ def stripe_onboard_return_view(request):
     description="Create Stripe payment intent for contribution",
     tags=["Payments"]
 )
+@ratelimit(key='ip', rate='10/m', method='POST', block=True)
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def create_payment_intent_view(request):
@@ -188,6 +196,29 @@ def create_payment_intent_view(request):
                 status=status.HTTP_404_NOT_FOUND
             )
         
+        # Security: Only allow payment for pending contributions
+        if contribution.payment_status != 'pending':
+            return Response(
+                {'error': 'This contribution has already been processed'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Security: Only allow payment for contributions less than 1 hour old
+        from django.utils import timezone
+        from datetime import timedelta
+        if contribution.created_at < timezone.now() - timedelta(hours=1):
+            return Response(
+                {'error': 'This contribution has expired. Please create a new one.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Security: Verify the gift list is still active
+        if contribution.gift_list.status != 'active':
+            return Response(
+                {'error': 'This gift list is no longer active'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         # Always create a new Stripe Checkout session (simplest approach)
         payment_intent_obj = create_stripe_checkout_session(contribution)
         
@@ -196,7 +227,7 @@ def create_payment_intent_view(request):
             'session_id': payment_intent_obj.stripe_payment_intent_id
         })
         
-    except stripe.error.StripeError as e:
+    except stripe.StripeError as e:
         import traceback
         print(f"DEBUG: Stripe error in create_payment_intent_view: {e}")
         print(f"DEBUG: Traceback: {traceback.format_exc()}")
@@ -234,7 +265,7 @@ def stripe_webhook_view(request):
     except ValueError:
         # Invalid payload
         return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
+    except stripe.SignatureVerificationError:
         # Invalid signature
         return HttpResponse(status=400)
     
@@ -285,6 +316,9 @@ def stripe_webhook_view(request):
 @permission_classes([permissions.AllowAny])
 def confirm_payment_view(request):
     """Confirm payment completion"""
+    # Configure Stripe API key
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    
     try:
         payment_intent_id = request.data.get('payment_intent_id')
         

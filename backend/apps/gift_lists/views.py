@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger(__name__)
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -71,9 +73,10 @@ class GiftListListCreateView(generics.ListCreateAPIView):
             # Jewelers see their own gift lists
             return GiftList.objects.filter(jeweler=user)
         else:
-            # Others see only public, active gift lists
+            # Others see only public, active gift lists that are shown in public gallery
             return GiftList.objects.filter(
                 is_public=True,
+                show_in_public_gallery=True,
                 status=GiftList.Status.ACTIVE
             )
     
@@ -121,6 +124,10 @@ class GiftListDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     serializer_class = GiftListSerializer
     permission_classes = [IsJewelerOrReadOnly]
+    
+    def update(self, request, *args, **kwargs):
+        logger.error(f"PATCH DATA RECEIVED: {request.data}")
+        return super().update(request, *args, **kwargs)
     
     def get_queryset(self):
         user = self.request.user

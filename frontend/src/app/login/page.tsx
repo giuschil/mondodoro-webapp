@@ -9,11 +9,11 @@ import Input from '@/components/ui/Input';
 import { Sparkles, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({});
 
   const { login } = useAuth();
   const router = useRouter();
@@ -24,8 +24,8 @@ export default function LoginPage() {
     setErrors({});
 
     // Validation
-    const newErrors: { email?: string; password?: string } = {};
-    if (!email) newErrors.email = 'Email richiesta';
+    const newErrors: { identifier?: string; password?: string } = {};
+    if (!identifier) newErrors.identifier = 'Email o username richiesto';
     if (!password) newErrors.password = 'Password richiesta';
 
     if (Object.keys(newErrors).length > 0) {
@@ -34,7 +34,8 @@ export default function LoginPage() {
       return;
     }
 
-    const success = await login({ email, password });
+    // Pass identifier as email (backend accepts both)
+    const success = await login({ email: identifier, password });
     if (success) {
       router.push('/dashboard');
     }
@@ -65,15 +66,15 @@ export default function LoginPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit} autoComplete="on">
           <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
             <Input
-              label="Email"
-              type="email"
-              name="email"
-              id="email"
+              label="Email o Username"
+              type="text"
+              name="identifier"
+              id="identifier"
               autoComplete="username email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-              placeholder="Inserisci la tua email"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              error={errors.identifier}
+              placeholder="Inserisci email o username"
               required
             />
 

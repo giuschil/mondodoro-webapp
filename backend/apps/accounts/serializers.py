@@ -78,33 +78,45 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class LoginSerializer(serializers.Serializer):
     """
-    Serializer for user login
+    Serializer for user login - accepts email or username
     """
-    email = serializers.EmailField()
+    email = serializers.CharField(
+        required=False,
+        help_text="Email or username for login"
+    )
+    username = serializers.CharField(
+        required=False,
+        help_text="Username or email for login (alternative to email field)"
+    )
     password = serializers.CharField()
     
     def validate(self, attrs):
-        """Validate login credentials"""
-        email = attrs.get('email')
+        """Validate login credentials - accepts email or username"""
+        # Accept either 'email' or 'username' field for login identifier
+        login_identifier = attrs.get('email') or attrs.get('username')
         password = attrs.get('password')
         
-        if email and password:
-            user = authenticate(
-                request=self.context.get('request'),
-                username=email,
-                password=password
-            )
-            
-            if not user:
-                raise serializers.ValidationError('Invalid email or password.')
-            
-            if not user.is_active:
-                raise serializers.ValidationError('User account is disabled.')
-            
-            attrs['user'] = user
-            return attrs
+        if not login_identifier:
+            raise serializers.ValidationError('Must include email or username.')
         
-        raise serializers.ValidationError('Must include email and password.')
+        if not password:
+            raise serializers.ValidationError('Must include password.')
+        
+        # The custom backend handles both email and username
+        user = authenticate(
+            request=self.context.get('request'),
+            username=login_identifier,
+            password=password
+        )
+        
+        if not user:
+            raise serializers.ValidationError('Invalid email/username or password.')
+        
+        if not user.is_active:
+            raise serializers.ValidationError('User account is disabled.')
+        
+        attrs['user'] = user
+        return attrs
 
 
 class PasswordChangeSerializer(serializers.Serializer):

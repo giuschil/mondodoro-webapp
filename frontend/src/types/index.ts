@@ -26,6 +26,7 @@ export interface GiftList {
   max_contributors?: number;
   status: 'draft' | 'active' | 'completed' | 'cancelled';
   is_public: boolean;
+  show_in_public_gallery: boolean;
   allow_anonymous_contributions: boolean;
   start_date?: string;
   end_date?: string;

@@ -389,19 +389,6 @@ export default function PublicGiftListPage() {
                   />
                 </div>
 
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                        name="is_anonymous"
-                        checked={contributionData.is_anonymous}
-                        onChange={handleInputChange}
-                        className="h-4 w-4 text-gold-600 focus:ring-gold-500 border-secondary-300 rounded"
-                  />
-                      <label className="ml-2 block text-sm text-secondary-700">
-                    Contributo anonimo
-                  </label>
-                </div>
-
                     <div className="flex space-x-4">
                   <Button
                     type="button"

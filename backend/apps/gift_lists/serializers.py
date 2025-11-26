@@ -75,7 +75,7 @@ class GiftListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'list_type', 'target_amount', 
             'fixed_contribution_amount', 'max_contributors', 'status',
-            'is_public', 'allow_anonymous_contributions', 'start_date', 'end_date',
+            'is_public', 'show_in_public_gallery', 'allow_anonymous_contributions', 'start_date', 'end_date',
             'cover_image', 'jeweler_name', 'business_name', 'items', 'products', 'contributions',
             'total_contributions', 'progress_percentage', 'contributors_count',
             'is_completed', 'public_url', 'created_at', 'updated_at'
@@ -112,7 +112,7 @@ class GiftListCreateSerializer(serializers.ModelSerializer):
         fields = [
             'title', 'description', 'list_type', 'target_amount', 
             'fixed_contribution_amount', 'max_contributors', 'status',
-            'is_public', 'allow_anonymous_contributions', 'start_date', 'end_date',
+            'is_public', 'show_in_public_gallery', 'allow_anonymous_contributions', 'start_date', 'end_date',
             'cover_image', 'items', 'products'
         ]
     

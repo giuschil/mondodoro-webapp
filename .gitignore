@@ -184,3 +184,4 @@ remote_config
 *.key
 *.pem
 *.crt
+backend/.env.backup*

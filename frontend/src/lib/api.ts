@@ -84,6 +84,7 @@ export const giftListsAPI = {
   getAll: async (params?: {
     status?: string;
     is_public?: boolean;
+    show_in_public_gallery?: boolean;
     search?: string;
     page?: number;
   }): Promise<PaginatedResponse<GiftList>> => {
@@ -107,6 +108,7 @@ export const giftListsAPI = {
     target_amount: number;
     status?: string;
     is_public?: boolean;
+    show_in_public_gallery?: boolean;
     allow_anonymous_contributions?: boolean;
     start_date?: string;
     end_date?: string;

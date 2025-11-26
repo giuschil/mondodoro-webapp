@@ -81,6 +81,10 @@ class GiftList(models.Model):
         default=True,
         help_text=_('Whether the gift list is publicly accessible')
     )
+    show_in_public_gallery = models.BooleanField(
+        default=False,
+        help_text=_('Whether to show this list in the public gallery at /lists')
+    )
     allow_anonymous_contributions = models.BooleanField(
         default=True,
         help_text=_('Allow contributions without registration')
