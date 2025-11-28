@@ -78,13 +78,17 @@ def stripe_onboard_view(request):
         })
         
     except stripe.StripeError as e:
+        # Log the full error for debugging but don't expose it to the client
+        print(f"Stripe error in stripe_onboard_view: {str(e)}")
         return Response(
-            {'error': f'Stripe error: {str(e)}'},
+            {'error': 'An error occurred with the payment provider. Please try again later.'},
             status=status.HTTP_400_BAD_REQUEST
         )
     except Exception as e:
+        # Log the full error for debugging but don't expose it to the client
+        print(f"Server error in stripe_onboard_view: {str(e)}")
         return Response(
-            {'error': f'Server error: {str(e)}'},
+            {'error': 'An internal server error occurred.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
@@ -232,7 +236,7 @@ def create_payment_intent_view(request):
         print(f"DEBUG: Stripe error in create_payment_intent_view: {e}")
         print(f"DEBUG: Traceback: {traceback.format_exc()}")
         return Response(
-            {'error': f'Stripe error: {str(e)}'},
+            {'error': 'An error occurred with the payment provider. Please try again later.'},
             status=status.HTTP_400_BAD_REQUEST
         )
     except Exception as e:
@@ -240,7 +244,7 @@ def create_payment_intent_view(request):
         print(f"DEBUG: Error in create_payment_intent_view: {e}")
         print(f"DEBUG: Traceback: {traceback.format_exc()}")
         return Response(
-            {'error': f'Server error: {str(e)}'},
+            {'error': 'An internal server error occurred.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
@@ -362,8 +366,9 @@ def confirm_payment_view(request):
             })
         
     except Exception as e:
+        print(f"Error in confirm_payment_view: {str(e)}")
         return Response(
-            {'error': str(e)},
+            {'error': 'An error occurred while confirming the payment.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 

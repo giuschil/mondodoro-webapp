@@ -11,7 +11,10 @@ import {
   PaginatedResponse
 } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+const API_BASE_URL = 'http://localhost:8000/api'; // Hardcoded for local dev to ensure connectivity
+
+console.log('Configured API_BASE_URL (Updated):', API_BASE_URL); // Debug log
 
 // Create axios instance
 const api = axios.create({

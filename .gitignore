@@ -68,6 +68,7 @@ lerna-debug.log*
 out/
 
 # Docker
+docker-compose.override.yml
 *.pid
 *.seed
 *.pid.lock

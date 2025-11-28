@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+// import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/lib/auth-context';
 
-const inter = Inter({ subsets: ['latin'] });
+// const inter = Inter({ subsets: ['latin'] });
+const inter = { className: 'font-sans' }; // Fallback to system font to speed up local dev
 
 export const metadata: Metadata = {
   title: 'ListDreams - Liste Regalo per Gioiellerie',
