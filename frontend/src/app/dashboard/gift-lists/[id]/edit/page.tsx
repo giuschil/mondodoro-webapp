@@ -91,8 +91,18 @@ export default function EditGiftListPage() {
       newErrors.title = 'Il titolo è obbligatorio';
     }
     
+    // target_amount is REQUIRED
     if (!formData.target_amount || parseFloat(formData.target_amount) <= 0) {
-      newErrors.target_amount = 'L\'importo obiettivo deve essere maggiore di 0';
+      newErrors.target_amount = 'L\'importo obiettivo è obbligatorio e deve essere maggiore di 0';
+    }
+    
+    // fixed_contribution_amount and max_contributors are OPTIONAL
+    if (formData.fixed_contribution_amount && parseFloat(formData.fixed_contribution_amount) <= 0) {
+      newErrors.fixed_contribution_amount = 'Il contributo fisso deve essere maggiore di 0';
+    }
+    
+    if (formData.max_contributors && parseInt(formData.max_contributors) <= 0) {
+      newErrors.max_contributors = 'Il numero di contribuenti deve essere maggiore di 0';
     }
     
     setErrors(newErrors);
@@ -129,12 +139,6 @@ export default function EditGiftListPage() {
         : null;
       payload.start_date = formData.start_date || null;
       payload.end_date = formData.end_date || null;
-
-      console.log('SENDING PAYLOAD:', JSON.stringify(payload));
-      alert('Payload: ' + JSON.stringify(payload));
-      
-      console.log('SENDING PAYLOAD:', JSON.stringify(payload));
-      alert('Payload: ' + JSON.stringify(payload));
       
       await giftListsAPI.update(giftListId, payload);
       
@@ -266,7 +270,7 @@ export default function EditGiftListPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-secondary-700 mb-1">
-                Obiettivo (€) *
+                Obiettivo (€)
               </label>
               <div className="relative">
                 <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-secondary-400" />
@@ -283,6 +287,7 @@ export default function EditGiftListPage() {
                   min="0"
                 />
               </div>
+              <p className="mt-1 text-xs text-secondary-500">Opzionale - lascia vuoto se non serve</p>
               {errors.target_amount && (
                 <p className="mt-1 text-sm text-red-600">{errors.target_amount}</p>
               )}

@@ -29,6 +29,7 @@ export default function ProfilePage() {
     email: '',
     business_name: '',
     phone: '',
+    // UI fields; backend expects business_address (single text field)
     address: '',
     city: '',
     postal_code: '',
@@ -38,16 +39,39 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user) {
+      // Prefill address fields by parsing business_address if present
+      let address = '';
+      let city = '';
+      let postal_code = '';
+      let country = '';
+      if ((user as any).business_address) {
+        const parts = String((user as any).business_address)
+          .split(/\n|,/)
+          .map(p => p.trim())
+          .filter(Boolean);
+        address = parts[0] || '';
+        if (parts[1]) {
+          const m = parts[1].match(/^(\d{4,5})\s+(.*)$/);
+          if (m) {
+            postal_code = m[1];
+            city = m[2];
+          } else {
+            city = parts[1];
+          }
+        }
+        country = parts[2] || '';
+      }
+
       setFormData({
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        email: user.email || '',
-        business_name: user.business_name || '',
-        phone: user.phone || '',
-        address: user.address || '',
-        city: user.city || '',
-        postal_code: user.postal_code || '',
-        country: user.country || '',
+        first_name: (user as any).first_name || '',
+        last_name: (user as any).last_name || '',
+        email: (user as any).email || '',
+        business_name: (user as any).business_name || '',
+        phone: (user as any).phone || '',
+        address,
+        city,
+        postal_code,
+        country,
       });
     }
     
@@ -146,7 +170,27 @@ export default function ProfilePage() {
     }
 
     try {
-      const updatedUser = await authAPI.updateProfile(formData);
+      // Map UI fields into backend-supported payload
+      const business_address = [
+        formData.address,
+        [formData.postal_code, formData.city].filter(Boolean).join(' '),
+        formData.country,
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      const payload: any = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        phone: formData.phone,
+      };
+      if (user?.role === 'jeweler') {
+        payload.business_name = formData.business_name;
+        payload.business_address = business_address;
+      }
+
+      const updatedUser = await authAPI.updateProfile(payload);
       updateUser(updatedUser);
       toast.success('Profilo aggiornato con successo!');
       setEditing(false);
@@ -186,22 +230,36 @@ export default function ProfilePage() {
               Gestisci le tue informazioni personali e le impostazioni dell'attività
             </p>
           </div>
-          <Button
-            variant={editing ? "outline" : "default"}
-            onClick={() => setEditing(!editing)}
-          >
-            {editing ? (
-              <>
-                <Edit3 className="h-4 w-4 mr-2" />
-                Annulla
-              </>
-            ) : (
-              <>
+          <div className="flex items-center space-x-3">
+            {!editing ? (
+              <Button
+                variant="primary"
+                onClick={() => setEditing(true)}
+              >
                 <Edit3 className="h-4 w-4 mr-2" />
                 Modifica
+              </Button>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditing(false)}
+                >
+                  Annulla
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="primary"
+                  loading={loading}
+                  onClick={handleSubmit}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Salva
+                </Button>
               </>
             )}
-          </Button>
+          </div>
         </div>
       </div>
 
@@ -469,22 +527,6 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Submit */}
-        {editing && (
-          <div className="flex justify-end space-x-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setEditing(false)}
-            >
-              Annulla
-            </Button>
-            <Button type="submit" loading={loading}>
-              <Save className="h-4 w-4 mr-2" />
-              Salva Modifiche
-            </Button>
-          </div>
-        )}
       </form>
     </DashboardLayout>
   );

@@ -203,7 +203,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-secondary-700 mt-8 pt-8 text-center text-secondary-300">
-            <p>&copy; 2024 ListDreams. Tutti i diritti riservati.</p>
+            <p>&copy; 2025 ListDreams. Tutti i diritti riservati.</p>
           </div>
         </div>
       </footer>

@@ -1,4 +1,5 @@
 import stripe
+import stripe.checkout
 from decimal import Decimal
 from django.conf import settings
 from django.utils import timezone
@@ -65,9 +66,9 @@ def create_stripe_checkout_session(contribution):
     platform_settings = PlatformSettings.load()
     
     # Calculate platform fee (percentage + fixed)
-    platform_fee_percentage = platform_settings.platform_fee_percentage
-    platform_fee_fixed = platform_settings.platform_fee_fixed
-    platform_fee_amount = (Decimal(str(contribution.amount)) * platform_fee_percentage / 100) + platform_fee_fixed
+    platform_fee_percentage = Decimal(str(platform_settings.platform_fee_percentage))
+    platform_fee_fixed = Decimal(str(platform_settings.platform_fee_fixed))
+    platform_fee_amount = (Decimal(str(contribution.amount)) * platform_fee_percentage / Decimal('100')) + platform_fee_fixed
     platform_fee_cents = int(platform_fee_amount * 100)
     
     # Get the base URL from settings

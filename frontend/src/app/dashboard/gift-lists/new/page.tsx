@@ -118,8 +118,18 @@ export default function NewGiftListPage() {
       newErrors.title = 'Il titolo è obbligatorio';
     }
 
+    // target_amount is REQUIRED
     if (!formData.target_amount || parseFloat(formData.target_amount) <= 0) {
-      newErrors.target_amount = 'L\'obiettivo deve essere maggiore di zero';
+      newErrors.target_amount = 'L\'obiettivo è obbligatorio e deve essere maggiore di zero';
+    }
+
+    // fixed_contribution_amount and max_contributors are OPTIONAL
+    if (formData.fixed_contribution_amount && parseFloat(formData.fixed_contribution_amount) <= 0) {
+      newErrors.fixed_contribution_amount = 'Il contributo fisso deve essere maggiore di 0';
+    }
+
+    if (formData.max_contributors && parseInt(formData.max_contributors) <= 0) {
+      newErrors.max_contributors = 'Il numero di contribuenti deve essere maggiore di 0';
     }
 
     if (formData.start_date && formData.end_date) {

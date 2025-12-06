@@ -94,8 +94,7 @@ class GiftListSerializer(serializers.ModelSerializer):
         if start_date and end_date and start_date >= end_date:
             raise serializers.ValidationError("End date must be after start date.")
         
-        if start_date and start_date < timezone.now():
-            raise serializers.ValidationError("Start date cannot be in the past.")
+        # Removed past date check - allow editing existing lists with past start dates
         
         return attrs
 
@@ -140,8 +139,7 @@ class GiftListCreateSerializer(serializers.ModelSerializer):
         if start_date and end_date and start_date >= end_date:
             raise serializers.ValidationError("End date must be after start date.")
         
-        if start_date and start_date < timezone.now():
-            raise serializers.ValidationError("Start date cannot be in the past.")
+        # Allow past start dates for flexibility
         
         return attrs
 

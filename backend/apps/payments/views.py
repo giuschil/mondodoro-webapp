@@ -52,17 +52,20 @@ def stripe_onboard_view(request):
         )
     
     try:
-        # Check if user already has a Stripe account
-        stripe_account, created = StripeAccount.objects.get_or_create(
-            jeweler=user,
-            defaults={'stripe_account_id': ''}
-        )
-        
-        if not stripe_account.stripe_account_id:
-            # Create Stripe Connect account
+        # Ensure we don't create rows with empty stripe_account_id (avoids UNIQUE conflicts)
+        stripe_account = StripeAccount.objects.filter(jeweler=user).first()
+        if not stripe_account:
+            # Create Stripe Connect account first, then persist with real id
+            account = create_stripe_account(user)
+            stripe_account = StripeAccount.objects.create(
+                jeweler=user,
+                stripe_account_id=account.id
+            )
+        elif not stripe_account.stripe_account_id:
+            # Backfill missing account id
             account = create_stripe_account(user)
             stripe_account.stripe_account_id = account.id
-            stripe_account.save()
+            stripe_account.save(update_fields=['stripe_account_id'])
         
         # Create onboarding link
         base_url = settings.BASE_URL
@@ -78,13 +81,17 @@ def stripe_onboard_view(request):
         })
         
     except stripe.StripeError as e:
+        # Log the full error for debugging but don't expose it to the client
+        print(f"Stripe error in stripe_onboard_view: {str(e)}")
         return Response(
-            {'error': f'Stripe error: {str(e)}'},
+            {'error': 'An error occurred with the payment provider. Please try again later.'},
             status=status.HTTP_400_BAD_REQUEST
         )
     except Exception as e:
+        # Log the full error for debugging but don't expose it to the client
+        print(f"Server error in stripe_onboard_view: {str(e)}")
         return Response(
-            {'error': f'Server error: {str(e)}'},
+            {'error': 'An internal server error occurred.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
@@ -232,7 +239,7 @@ def create_payment_intent_view(request):
         print(f"DEBUG: Stripe error in create_payment_intent_view: {e}")
         print(f"DEBUG: Traceback: {traceback.format_exc()}")
         return Response(
-            {'error': f'Stripe error: {str(e)}'},
+            {'error': 'An error occurred with the payment provider. Please try again later.'},
             status=status.HTTP_400_BAD_REQUEST
         )
     except Exception as e:
@@ -240,7 +247,102 @@ def create_payment_intent_view(request):
         print(f"DEBUG: Error in create_payment_intent_view: {e}")
         print(f"DEBUG: Traceback: {traceback.format_exc()}")
         return Response(
-            {'error': f'Server error: {str(e)}'},
+            {'error': 'An internal server error occurred.'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+@extend_schema(
+    summary="Get Stripe account status",
+    description="Get the current status of the jeweler's Stripe Connect account",
+    tags=["Stripe Connect"]
+)
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def stripe_account_status_view(request):
+    """Return the current status of the jeweler's Stripe Connect account"""
+    user = request.user
+    if user.role != User.UserRole.JEWELER:
+        return Response(
+            {'error': 'Only jewelers can access Stripe account status'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+    try:
+        stripe_account = StripeAccount.objects.get(jeweler=user)
+        return Response({
+            'account_id': stripe_account.stripe_account_id,
+            'charges_enabled': stripe_account.charges_enabled,
+            'payouts_enabled': stripe_account.payouts_enabled,
+            'onboarding_completed': stripe_account.onboarding_completed,
+            'account_status': stripe_account.account_status,
+            'country': stripe_account.country,
+            'currency': stripe_account.currency,
+        })
+    except StripeAccount.DoesNotExist:
+        return Response({
+            'account_id': None,
+            'charges_enabled': False,
+            'payouts_enabled': False,
+            'onboarding_completed': False,
+            'account_status': 'not_configured',
+            'country': None,
+            'currency': None,
+        })
+
+
+@extend_schema(
+    summary="Get Stripe dashboard login link",
+    description="Generate a short-lived login link to the Stripe Express dashboard for the authenticated jeweler",
+    tags=["Stripe Connect"]
+)
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def stripe_dashboard_link_view(request):
+    """Return a short-lived login link for the jeweler's Stripe Express dashboard"""
+    # Configure Stripe API key
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+
+    user = request.user
+    if user.role != User.UserRole.JEWELER:
+        return Response(
+            {'error': 'Only jewelers can access the Stripe dashboard'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    try:
+        stripe_account = StripeAccount.objects.get(jeweler=user)
+        if not stripe_account.stripe_account_id:
+            return Response(
+                {'error': 'Stripe account not found. Please complete onboarding first.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        login_link = stripe.Account.create_login_link(
+            stripe_account.stripe_account_id
+        )
+
+        return Response({
+            'dashboard_url': login_link.url
+        })
+
+    except StripeAccount.DoesNotExist:
+        return Response(
+            {'error': 'Stripe account not found. Please complete onboarding first.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except stripe.StripeError as e:
+        # Do not expose internals to client
+        print(f"Stripe error in stripe_dashboard_link_view: {str(e)}")
+        return Response(
+            {'error': 'An error occurred with the payment provider. Please try again later.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception as e:
+        print(f"Server error in stripe_dashboard_link_view: {str(e)}")
+        return Response(
+            {'error': 'An internal server error occurred.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
@@ -362,8 +464,9 @@ def confirm_payment_view(request):
             })
         
     except Exception as e:
+        print(f"Error in confirm_payment_view: {str(e)}")
         return Response(
-            {'error': str(e)},
+            {'error': 'An error occurred while confirming the payment.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
