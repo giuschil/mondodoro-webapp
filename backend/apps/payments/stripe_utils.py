@@ -219,15 +219,12 @@ def handle_checkout_session_completed(session_data):
         contribution.payment_status = Contribution.PaymentStatus.COMPLETED
         contribution.completed_at = timezone.now()
         contribution.save()
-        
-        print(f"DEBUG: Successfully processed checkout session for contribution {contribution_id}")
+
         return True
-        
+
     except PaymentIntent.DoesNotExist:
-        print(f"DEBUG: PaymentIntent not found for session {session_data['id']}")
         return False
-    except Exception as e:
-        print(f"DEBUG: Error in handle_checkout_session_completed: {e}")
+    except Exception:
         return False
 
 

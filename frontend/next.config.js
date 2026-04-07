@@ -2,18 +2,35 @@
 const nextConfig = {
   output: 'standalone',
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   images: {
-    domains: ['localhost', '127.0.0.1'],
     remotePatterns: [
+      // Local development backend
       {
         protocol: 'http',
         hostname: 'localhost',
         port: '8000',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '8000',
+        pathname: '/media/**',
+      },
+      // Production backend (VPS)
+      {
+        protocol: 'https',
+        hostname: 'listdreams.it',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.listdreams.it',
         pathname: '/media/**',
       },
     ],

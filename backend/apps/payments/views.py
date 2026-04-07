@@ -27,9 +27,6 @@ from apps.accounts.models import User
 # Configure Stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-# Debug: Check if Stripe is configured
-print(f"DEBUG: Stripe configured with key: {stripe.api_key[:20] if stripe.api_key else 'None'}...")
-
 
 @extend_schema(
     summary="Create Stripe onboarding link",
@@ -228,17 +225,11 @@ def create_payment_intent_view(request):
         })
         
     except stripe.StripeError as e:
-        import traceback
-        print(f"DEBUG: Stripe error in create_payment_intent_view: {e}")
-        print(f"DEBUG: Traceback: {traceback.format_exc()}")
         return Response(
             {'error': f'Stripe error: {str(e)}'},
             status=status.HTTP_400_BAD_REQUEST
         )
     except Exception as e:
-        import traceback
-        print(f"DEBUG: Error in create_payment_intent_view: {e}")
-        print(f"DEBUG: Traceback: {traceback.format_exc()}")
         return Response(
             {'error': f'Server error: {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR

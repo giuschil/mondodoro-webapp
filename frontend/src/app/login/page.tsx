@@ -6,7 +6,29 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { Sparkles, Eye, EyeOff } from 'lucide-react';
+import { Sparkles, Eye, EyeOff, ChevronDown } from 'lucide-react';
+
+function DemoCredentials() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="bg-blue-50 border border-blue-200 rounded-lg overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-blue-800 hover:bg-blue-100 transition-colors"
+      >
+        Account Demo
+        <ChevronDown className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="px-4 pb-3 text-xs text-blue-700 space-y-1 border-t border-blue-200 pt-2">
+          <p><strong>Gioielliere:</strong> jeweler@demo.com / password123</p>
+          <p><strong>Invitato:</strong> guest@demo.com / password123</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState('');
@@ -132,14 +154,10 @@ export default function LoginPage() {
           </div>
         </form>
 
-        {/* Demo accounts */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">Account Demo:</h3>
-          <div className="text-xs text-blue-700 space-y-1">
-            <p><strong>Gioielliere:</strong> jeweler@demo.com / password123</p>
-            <p><strong>Invitato:</strong> guest@demo.com / password123</p>
-          </div>
-        </div>
+        {/* Demo accounts — shown only in development */}
+        {process.env.NODE_ENV === 'development' && (
+          <DemoCredentials />
+        )}
       </div>
     </div>
   );
