@@ -15,6 +15,10 @@ urlpatterns = [
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('change-password/', views.change_password_view, name='change_password'),
     
+    # Password reset (unauthenticated)
+    path('forgot-password/', views.forgot_password_view, name='forgot_password'),
+    path('reset-password/', views.reset_password_view, name='reset_password'),
+
     # Jeweler specific
     path('jeweler/profile/', views.JewelerProfileView.as_view(), name='jeweler_profile'),
 ]

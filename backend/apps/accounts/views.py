@@ -9,11 +9,17 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.middleware.csrf import get_token
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.core.mail import send_mail
+from django.conf import settings
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from .models import User
 from .serializers import (
     UserSerializer, UserRegistrationSerializer, LoginSerializer,
-    PasswordChangeSerializer, JewelerProfileSerializer
+    PasswordChangeSerializer, JewelerProfileSerializer,
+    ForgotPasswordSerializer, ResetPasswordSerializer
 )
 
 
@@ -203,7 +209,7 @@ def me_view(request):
     return Response(UserSerializer(request.user).data)
 
 @extend_schema(
-    summary="Get CSRF Token", 
+    summary="Get CSRF Token",
     description="Get CSRF token for subsequent requests",
     tags=["Authentication"]
 )
@@ -215,3 +221,96 @@ def csrf_token_view(request):
     Get CSRF token
     """
     return Response({'csrfToken': get_token(request)})
+
+
+@extend_schema(
+    summary="Request password reset",
+    description="Send a password reset email with a token link",
+    tags=["Authentication"]
+)
+@csrf_exempt
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def forgot_password_view(request):
+    """
+    Request password reset: generates a token and emails it to the user.
+    Always returns 200 to avoid user enumeration.
+    """
+    serializer = ForgotPasswordSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    email = serializer.validated_data['email']
+
+    try:
+        user = User.objects.get(email=email, is_active=True)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        reset_url = f"{settings.FRONTEND_URL}/reset-password?uid={uid}&token={token}"
+
+        send_mail(
+            subject="Reset della tua password – ListDreams",
+            message=(
+                f"Ciao {user.first_name},\n\n"
+                f"Hai richiesto il reset della password per il tuo account ListDreams.\n\n"
+                f"Clicca sul link seguente per impostare una nuova password (valido per 24 ore):\n"
+                f"{reset_url}\n\n"
+                f"Se non hai richiesto il reset, ignora questa email.\n\n"
+                f"Il team ListDreams"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=True,
+        )
+    except User.DoesNotExist:
+        pass  # Do not reveal if the email exists
+
+    return Response({
+        'message': 'Se esiste un account con questa email, riceverai le istruzioni per il reset.'
+    })
+
+
+@extend_schema(
+    summary="Reset password with token",
+    description="Set a new password using the token received by email",
+    tags=["Authentication"]
+)
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def reset_password_view(request):
+    """
+    Reset password using uid + token from the email link.
+    """
+    serializer = ResetPasswordSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    uid = serializer.validated_data['uid']
+    token = serializer.validated_data['token']
+    new_password = serializer.validated_data['new_password']
+
+    try:
+        pk = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=pk, is_active=True)
+    except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+        return Response(
+            {'error': 'Link non valido o scaduto.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not default_token_generator.check_token(user, token):
+        return Response(
+            {'error': 'Link non valido o scaduto.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user.set_password(new_password)
+    user.save()
+
+    # Invalidate any existing auth tokens
+    try:
+        user.auth_token.delete()
+    except Exception:
+        pass
+
+    return Response({'message': 'Password aggiornata con successo. Puoi ora accedere.'})
