@@ -10,9 +10,9 @@ services:
     container_name: regalino_backend
     restart: unless-stopped
     ports:
-      - "8001:8000"  # Porta dedicata per regalino
+      - "8001:8000"
     environment:
-      - DATABASE_URL=postgresql://regalino_user:${DB_PASSWORD}@postgres:5432/regalino
+      - DATABASE_URL=postgresql://listdreams_admin:${DB_PASSWORD}@172.17.0.1:5432/listdreams_db
       - REDIS_URL=redis://redis:6379
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=False
@@ -24,7 +24,6 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     depends_on:
-      - postgres
       - redis
     command: >
       sh -c "python manage.py collectstatic --noinput &&
@@ -40,7 +39,7 @@ services:
     container_name: regalino_frontend
     restart: unless-stopped
     ports:
-      - "3001:3000"  # Porta dedicata per regalino
+      - "3001:3000"
     environment:
       - NEXT_PUBLIC_API_URL=/api
       - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
@@ -55,28 +54,15 @@ services:
     container_name: regalino_nginx
     restart: unless-stopped
     ports:
-      - "8080:80"   # HTTP (redirect to HTTPS)
-      - "8443:443"  # HTTPS
+      - "8080:80"
+      - "8443:443"
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-      - ./nginx/ssl:/etc/nginx/ssl:ro  # Mount SSL certificates
+      - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       - backend
       - frontend
-
-  postgres:
-    image: postgres:15-alpine
-    container_name: regalino_postgres
-    restart: unless-stopped
-    environment:
-      - POSTGRES_DB=regalino
-      - POSTGRES_USER=regalino_user
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
 
   redis:
     image: redis:7-alpine
@@ -90,4 +76,3 @@ volumes:
     name: regalino_static
   media_volume:
     name: regalino_media
-  postgres_data:

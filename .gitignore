@@ -185,3 +185,9 @@ remote_config
 *.pem
 *.crt
 backend/.env.backup*
+
+# Additional security
+.env.backup
+.env.local
+*.backup
+backend/data_dump.json
