@@ -369,19 +369,15 @@ def confirm_payment_view(request):
 def platform_settings_view(request):
     """Get platform settings"""
     try:
-        settings_obj, created = PlatformSettings.objects.get_or_create(
-            defaults={
-                'stripe_platform_fee_percentage': 2.5,
-                'stripe_application_fee_percentage': 1.0
-            }
-        )
-        
+        settings_obj = PlatformSettings.load()
+
         return Response({
-            'stripe_platform_fee_percentage': settings_obj.stripe_platform_fee_percentage,
-            'stripe_application_fee_percentage': settings_obj.stripe_application_fee_percentage,
-            'stripe_webhook_enabled': settings_obj.stripe_webhook_enabled,
+            'platform_fee_percentage': str(settings_obj.platform_fee_percentage),
+            'platform_fee_fixed': str(settings_obj.platform_fee_fixed),
+            'minimum_contribution': str(settings_obj.minimum_contribution),
+            'maximum_contribution': str(settings_obj.maximum_contribution),
         })
-        
+
     except Exception as e:
         return Response(
             {'error': str(e)},

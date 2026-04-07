@@ -1,5 +1,3 @@
-import logging
-logger = logging.getLogger(__name__)
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -126,7 +124,6 @@ class GiftListDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsJewelerOrReadOnly]
     
     def update(self, request, *args, **kwargs):
-        logger.error(f"PATCH DATA RECEIVED: {request.data}")
         return super().update(request, *args, **kwargs)
     
     def get_queryset(self):
@@ -268,19 +265,20 @@ class ContributionListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         gift_list_id = self.kwargs['gift_list_id']
         user = self.request.user
-        
+
         queryset = Contribution.objects.filter(gift_list_id=gift_list_id)
-        
-        # Only gift list owner can see all contributions
-        if not (user.is_authenticated and 
-                queryset.first() and 
-                queryset.first().gift_list.jeweler == user):
-            # Others can only see completed, non-anonymous contributions
+
+        # Only the gift list owner sees all contributions (including pending/anonymous)
+        is_owner = (
+            user.is_authenticated and
+            GiftList.objects.filter(pk=gift_list_id, jeweler=user).exists()
+        )
+        if not is_owner:
             queryset = queryset.filter(
                 payment_status=Contribution.PaymentStatus.COMPLETED,
-                is_anonymous=False
+                is_anonymous=False,
             )
-        
+
         return queryset
     
     def perform_create(self, serializer):

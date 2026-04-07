@@ -79,7 +79,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    # "django.middleware.csrf.CsrfViewMiddleware",  # DISABLED FOR API
+    "django.middleware.csrf.CsrfViewMiddleware",   # Enabled: API views use @csrf_exempt; protects /admin/
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -169,13 +169,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# In development, keep password rules simple to streamline testing
-if DEBUG:
+# In production use full password validators; dev keeps it simple for testing
+if not DEBUG:
     AUTH_PASSWORD_VALIDATORS = [
+        {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
         {
             "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
             "OPTIONS": {"min_length": 8},
-        }
+        },
+        {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+        {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
     ]
 
 
