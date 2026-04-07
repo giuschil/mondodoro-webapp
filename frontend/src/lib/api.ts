@@ -77,6 +77,21 @@ export const authAPI = {
     const response = await api.post('/auth/change-password/', data);
     return response.data;
   },
+
+  forgotPassword: async (email: string): Promise<{ message: string }> => {
+    const response = await api.post('/auth/forgot-password/', { email });
+    return response.data;
+  },
+
+  resetPassword: async (data: {
+    uid: string;
+    token: string;
+    new_password: string;
+    new_password_confirm: string;
+  }): Promise<{ message: string }> => {
+    const response = await api.post('/auth/reset-password/', data);
+    return response.data;
+  },
 };
 
 // Gift Lists API

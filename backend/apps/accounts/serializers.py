@@ -141,6 +141,28 @@ class PasswordChangeSerializer(serializers.Serializer):
         return value
 
 
+class ForgotPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for requesting a password reset email.
+    """
+    email = serializers.EmailField()
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for resetting a password via token.
+    """
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(validators=[validate_password])
+    new_password_confirm = serializers.CharField()
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['new_password_confirm']:
+            raise serializers.ValidationError("Le password non coincidono.")
+        return attrs
+
+
 class JewelerProfileSerializer(serializers.ModelSerializer):
     """
     Serializer for jeweler profile management
