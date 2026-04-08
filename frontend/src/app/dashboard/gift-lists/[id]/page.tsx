@@ -515,7 +515,7 @@ export default function GiftListDetailPage() {
                   {giftList.products.map((product) => (
                     <div key={product.id} className="border border-secondary-200 rounded-lg p-4">
                       {product.image_url && (
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={product.image_url}
                           alt={product.name}
