@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
   if (!BREVO_API_KEY) {
     console.error('BREVO_API_KEY not configured');
-    return NextResponse.json({ error: 'Servizio email non configurato.' }, { status: 500 });
+    return NextResponse.json({ error: 'Servizio email temporaneamente non disponibile. Scrivici direttamente a info@listdreams.it' }, { status: 500 });
   }
 
   const oggettoLabel: Record<string, string> = {
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     if (!emailRes.ok) {
       const err = await emailRes.text();
       console.error('Brevo email error:', err);
-      return NextResponse.json({ error: 'Errore invio email.' }, { status: 500 });
+      return NextResponse.json({ error: 'Errore durante l\'invio. Scrivici direttamente a info@listdreams.it' }, { status: 500 });
     }
 
     // 2. Add/update contact in Brevo (non-blocking — don't fail if this errors)
@@ -83,6 +83,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error('Contact form error:', e);
-    return NextResponse.json({ error: 'Errore interno.' }, { status: 500 });
+    return NextResponse.json({ error: 'Errore interno del server. Riprova più tardi.' }, { status: 500 });
   }
 }

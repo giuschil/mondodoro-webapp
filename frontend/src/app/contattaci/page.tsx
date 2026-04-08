@@ -33,8 +33,9 @@ export default function ContattaciPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Errore invio');
+      let data: any = {};
+      try { data = await res.json(); } catch { /* risposta non JSON */ }
+      if (!res.ok) throw new Error(data.error || 'Errore durante l\'invio. Riprova più tardi.');
       setStatus('success');
     } catch (err: any) {
       setStatus('error');
