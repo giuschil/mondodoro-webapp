@@ -19,28 +19,34 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 168.231.85.166 >> ~/.ssh/known_hosts
 
-      - name: Deploy
+      - name: Upload code to VPS
+        run: |
+          git archive HEAD | gzip > /tmp/deploy.tar.gz
+          scp -i ~/.ssh/id_ed25519 /tmp/deploy.tar.gz root@168.231.85.166:/tmp/deploy.tar.gz
+
+      - name: Deploy on VPS
         run: |
           ssh -i ~/.ssh/id_ed25519 root@168.231.85.166 << 'ENDSSH'
             set -e
+
+            echo "==> Extracting new code..."
+            mkdir -p /var/www/regalino.it
             cd /var/www/regalino.it
+            tar -xzf /tmp/deploy.tar.gz
+            rm /tmp/deploy.tar.gz
 
-            echo "→ Pulling latest code from GitHub..."
-            git remote set-url origin https://github.com/giuschil/mondodoro-webapp.git
-            git fetch origin main
-            git reset --hard origin/main
-
-            echo "→ Building and restarting containers..."
+            echo "==> Building and restarting containers..."
             docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
-            echo "→ Running database migrations..."
+            echo "==> Running migrations..."
             docker compose -f docker-compose.prod.yml exec -T backend python manage.py migrate --noinput
 
-            echo "→ Collecting static files..."
+            echo "==> Collecting static files..."
             docker compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
 
-            echo "→ Cleaning up unused Docker images..."
+            echo "==> Cleaning up Docker images..."
             docker image prune -f
+            docker builder prune -f --keep-storage 2gb
 
-            echo "✓ Deploy completato"
+            echo "==> Deploy completato!"
           ENDSSH
