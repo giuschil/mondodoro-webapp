@@ -82,7 +82,7 @@ export default function HomePage() {
             <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600">
               <a href="#come-funziona" className="hover:text-gray-900 transition-colors">Come funziona</a>
               <a href="#funzionalita" className="hover:text-gray-900 transition-colors">Funzionalità</a>
-              <a href="#prezzi" className="hover:text-gray-900 transition-colors">Prezzi</a>
+              <Link href="/prezzi" className="hover:text-gray-900 transition-colors">Prezzi</Link>
               <Link href="/centro-aiuto" className="hover:text-gray-900 transition-colors">Aiuto</Link>
             </nav>
             <div className="flex items-center gap-3">
@@ -233,57 +233,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Pricing teaser ── */}
-      <section id="prezzi" className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="rounded-3xl bg-gradient-to-br from-amber-500 to-yellow-400 p-px shadow-xl shadow-amber-200">
-            <div className="rounded-3xl bg-white p-10 text-center">
-              <p className="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-2">Prezzi</p>
-              <h2 className="text-4xl font-bold text-gray-900 mb-3">Paghi solo sulle transazioni</h2>
-              <p className="text-gray-500 mb-8 max-w-md mx-auto">
-                Nessun abbonamento, nessun costo fisso mensile.
-                Una piccola commissione solo quando i tuoi clienti contribuiscono.
-              </p>
-
-              <div className="flex items-baseline justify-center gap-1 mb-4">
-                <span className="text-6xl font-extrabold text-gray-900">2.5%</span>
-                <span className="text-xl text-gray-500">+ €0.30</span>
-              </div>
-              <p className="text-sm text-gray-400 mb-10">per ogni transazione completata</p>
-
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/register?role=jeweler">
-                  <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-amber-200">
-                    Inizia gratis
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link href="/contact">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                    Contattaci per un piano enterprise
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="mt-8 flex flex-wrap justify-center gap-5 text-sm text-gray-500">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  Stripe Connect certificato
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  Bonifico diretto al tuo conto
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  Annulla in qualsiasi momento
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ── CTA ── */}
       <section className="py-20 bg-gray-900 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
@@ -322,7 +271,7 @@ export default function HomePage() {
               <ul className="space-y-2.5 text-sm">
                 <li><Link href="#come-funziona" className="hover:text-white transition-colors">Come funziona</Link></li>
                 <li><Link href="#funzionalita" className="hover:text-white transition-colors">Funzionalità</Link></li>
-                <li><Link href="#prezzi" className="hover:text-white transition-colors">Prezzi</Link></li>
+                <li><Link href="/prezzi" className="hover:text-white transition-colors">Prezzi</Link></li>
                 <li><Link href="/lists" className="hover:text-white transition-colors">Galleria liste</Link></li>
               </ul>
             </div>
