@@ -75,10 +75,10 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <Sparkles className="h-7 w-7 text-amber-500" />
               <span className="text-xl font-bold text-gray-900 tracking-tight">ListDreams</span>
-            </div>
+            </Link>
             <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600">
               <a href="#come-funziona" className="hover:text-gray-900 transition-colors">Come funziona</a>
               <a href="#funzionalita" className="hover:text-gray-900 transition-colors">Funzionalità</a>

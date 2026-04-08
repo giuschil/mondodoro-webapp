@@ -11,14 +11,32 @@ const inter = Inter({ subsets: ['latin'] });
 const GTM_ID = 'GTM-W2X4BVPQ';
 
 export const metadata: Metadata = {
-  title: 'ListDreams - Liste Regalo per Gioiellerie',
-  description: 'Piattaforma per liste regalo e collette online dedicate a gioiellerie',
-  keywords: 'liste regalo, gioiellerie, collette online, regali, matrimonio',
+  title: 'ListDreams – Liste Regalo Digitali per Gioiellerie',
+  description: 'Crea liste regalo e collette online per la tua gioielleria. I clienti condividono il link, gli invitati pagano con carta — i fondi arrivano direttamente a te.',
+  keywords: 'liste regalo, gioiellerie, collette online, regali matrimonio, lista nozze gioielleria',
   authors: [{ name: 'ListDreams' }],
+  metadataBase: new URL('https://www.listdreams.it'),
   openGraph: {
-    title: 'ListDreams - Liste Regalo per Gioiellerie',
-    description: 'Crea liste regalo e collette online per la tua gioielleria',
+    title: 'ListDreams – Liste Regalo Digitali per Gioiellerie',
+    description: 'Crea liste regalo e collette online per la tua gioielleria. I clienti condividono il link, gli invitati pagano con carta — i fondi arrivano direttamente a te.',
+    url: 'https://www.listdreams.it',
+    siteName: 'ListDreams',
     type: 'website',
+    locale: 'it_IT',
+    images: [
+      {
+        url: '/og-image.svg',
+        width: 1200,
+        height: 630,
+        alt: 'ListDreams – Liste Regalo per Gioiellerie',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ListDreams – Liste Regalo Digitali per Gioiellerie',
+    description: 'Crea liste regalo e collette online per la tua gioielleria.',
+    images: ['/og-image.svg'],
   },
 };
 
