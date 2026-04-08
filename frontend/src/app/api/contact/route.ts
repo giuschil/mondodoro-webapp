@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'ListDreams Form', email: 'noreply@listdreams.it' },
+        sender: { name: 'ListDreams', email: 'info@listdreams.it' },
         to: [{ email: NOTIFY_EMAIL, name: NOTIFY_NAME }],
         replyTo: { email, name: mittente },
         subject: `[Contatto] ${oggettoText} — ${mittente}`,
