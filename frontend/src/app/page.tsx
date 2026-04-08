@@ -83,6 +83,7 @@ export default function HomePage() {
               <a href="#come-funziona" className="hover:text-gray-900 transition-colors">Come funziona</a>
               <a href="#funzionalita" className="hover:text-gray-900 transition-colors">Funzionalità</a>
               <a href="#prezzi" className="hover:text-gray-900 transition-colors">Prezzi</a>
+              <Link href="/centro-aiuto" className="hover:text-gray-900 transition-colors">Aiuto</Link>
             </nav>
             <div className="flex items-center gap-3">
               <Link href="/login">
