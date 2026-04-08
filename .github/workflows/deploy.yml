@@ -9,28 +9,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy to Hostinger VPS
-        uses: hostinger/deploy-action@v1
-        with:
-          api_token: ${{ secrets.HOSTINGER_API_KEY }}
-          vps_id: ${{ vars.HOSTINGER_VM_ID }}
-          script: |
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 168.231.85.166 >> ~/.ssh/known_hosts
+
+      - name: Deploy
+        run: |
+          ssh -i ~/.ssh/id_ed25519 root@168.231.85.166 << 'ENDSSH'
             set -e
+            cd /var/www/regalino.it
 
-            APP_DIR="/var/www/regalino.it"
-
-            echo "→ Pulling latest code..."
-            cd "$APP_DIR"
+            echo "→ Pulling latest code from GitHub..."
+            git remote set-url origin https://github.com/giuschil/mondodoro-webapp.git
             git fetch origin main
             git reset --hard origin/main
 
             echo "→ Building and restarting containers..."
             docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
-            echo "→ Running migrations..."
+            echo "→ Running database migrations..."
             docker compose -f docker-compose.prod.yml exec -T backend python manage.py migrate --noinput
 
             echo "→ Collecting static files..."
@@ -39,4 +42,5 @@ jobs:
             echo "→ Cleaning up unused Docker images..."
             docker image prune -f
 
-            echo "✓ Deploy completato con successo"
+            echo "✓ Deploy completato"
+          ENDSSH
