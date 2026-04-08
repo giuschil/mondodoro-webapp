@@ -24,21 +24,6 @@ jobs:
           git archive HEAD | gzip > /tmp/deploy.tar.gz
           scp -i ~/.ssh/id_ed25519 /tmp/deploy.tar.gz root@168.231.85.166:/tmp/deploy.tar.gz
 
-      - name: Inject secrets into VPS .env
-        run: |
-          ssh -i ~/.ssh/id_ed25519 root@168.231.85.166 "
-            ENV_FILE=/var/www/regalino.it/.env
-            add_or_update() {
-              local key=\$1 val=\$2
-              if grep -q \"^\${key}=\" \"\$ENV_FILE\" 2>/dev/null; then
-                sed -i \"s|^\${key}=.*|\${key}=\${val}|\" \"\$ENV_FILE\"
-              else
-                echo \"\${key}=\${val}\" >> \"\$ENV_FILE\"
-              fi
-            }
-            add_or_update BREVO_API_KEY '${{ secrets.BREVO_API_KEY }}'
-          "
-
       - name: Deploy on VPS
         run: |
           ssh -i ~/.ssh/id_ed25519 root@168.231.85.166 << 'ENDSSH'
