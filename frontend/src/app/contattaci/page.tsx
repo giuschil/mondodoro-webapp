@@ -92,7 +92,7 @@ export default function ContattaciPage() {
             Contattaci
           </h1>
           <p className="text-lg text-gray-600 max-w-xl mx-auto">
-            Hai una domanda, un problema o vuoi semplicemente saperne di più? Scrivici — ti rispondiamo entro 24 ore.
+            Hai una domanda, un problema o vuoi semplicemente saperne di più? Scrivici — ti rispondiamo il prima possibile.
           </p>
         </div>
       </section>
@@ -173,7 +173,7 @@ export default function ContattaciPage() {
                   <CheckCircle className="h-14 w-14 text-green-500" />
                   <h3 className="text-lg font-semibold text-gray-900">Messaggio inviato!</h3>
                   <p className="text-gray-500 text-sm max-w-xs">
-                    Grazie per averci contattato. Ti risponderemo entro 24 ore all&apos;indirizzo <strong>{form.email}</strong>.
+                    Grazie per averci contattato. Ti risponderemo il prima possibile all&apos;indirizzo <strong>{form.email}</strong>.
                   </p>
                   <button
                     onClick={() => { setStatus('idle'); setForm({ nome: '', cognome: '', email: '', oggetto: '', messaggio: '', website: '' }); }}
