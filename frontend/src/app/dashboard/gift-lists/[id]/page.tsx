@@ -18,6 +18,7 @@ import {
   Settings,
   Plus,
   Eye,
+  Edit,
   Trash2,
   ExternalLink,
   Gift,
@@ -514,8 +515,9 @@ export default function GiftListDetailPage() {
                   {giftList.products.map((product) => (
                     <div key={product.id} className="border border-secondary-200 rounded-lg p-4">
                       {product.image_url && (
-                        <img 
-                          src={product.image_url} 
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={product.image_url}
                           alt={product.name}
                           className="w-full h-48 object-cover rounded-lg mb-4"
                         />

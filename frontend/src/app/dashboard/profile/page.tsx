@@ -183,7 +183,7 @@ export default function ProfilePage() {
               Profilo
             </h1>
             <p className="mt-1 text-sm text-secondary-600">
-              Gestisci le tue informazioni personali e le impostazioni dell'attività
+              Gestisci le tue informazioni personali e le impostazioni dell&apos;attività
             </p>
           </div>
           <Button

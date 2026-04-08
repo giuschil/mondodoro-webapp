@@ -171,6 +171,7 @@ export default function PublicGiftListPage() {
           {/* Cover Image */}
           {giftList.cover_image && (
             <div className="h-64 bg-gray-200 overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={giftList.cover_image}
                 alt={giftList.title}
@@ -294,7 +295,7 @@ export default function PublicGiftListPage() {
                       </p>
                     {contribution.message && (
                         <p className="text-sm text-secondary-600">
-                              "{contribution.message}"
+                              &quot;{contribution.message}&quot;
                         </p>
                           )}
                         </div>

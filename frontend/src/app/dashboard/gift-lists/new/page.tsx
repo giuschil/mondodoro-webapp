@@ -532,7 +532,7 @@ export default function NewGiftListPage() {
 
           {items.length === 0 ? (
             <p className="text-sm text-secondary-500 text-center py-8">
-              Nessun prodotto aggiunto. Clicca "Aggiungi Prodotto" per iniziare.
+              Nessun prodotto aggiunto. Clicca &quot;Aggiungi Prodotto&quot; per iniziare.
             </p>
           ) : (
             <div className="space-y-4">
