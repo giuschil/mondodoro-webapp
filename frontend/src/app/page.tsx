@@ -329,9 +329,9 @@ export default function HomePage() {
             <div>
               <h4 className="text-sm font-semibold text-white mb-4">Supporto</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contattaci</Link></li>
+                <li><Link href="/contattaci" className="hover:text-white transition-colors">Contattaci</Link></li>
                 <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-                <li><Link href="/help" className="hover:text-white transition-colors">Centro aiuto</Link></li>
+                <li><Link href="/centro-aiuto" className="hover:text-white transition-colors">Centro aiuto</Link></li>
               </ul>
             </div>
 
