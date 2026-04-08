@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { giftListsAPI } from '@/lib/api';
 import { GiftList } from '@/types';
 import { formatCurrency, formatDate } from '@/lib/utils';
@@ -105,11 +106,12 @@ export default function PublicListsPage() {
             {giftLists.map((giftList) => (
               <div key={giftList.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                 {giftList.cover_image && (
-                  <div className="h-48 bg-gray-200 overflow-hidden">
-                    <img
+                  <div className="h-48 bg-gray-200 overflow-hidden relative">
+                    <Image
                       src={giftList.cover_image}
                       alt={giftList.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </div>
                 )}
