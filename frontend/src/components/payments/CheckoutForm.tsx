@@ -122,9 +122,10 @@ export default function CheckoutForm({
         <div className="mt-6 text-center">
           <div className="flex items-center justify-center space-x-4 text-xs text-secondary-500">
             <span>Pagamento sicuro con</span>
-            <img 
-              src="https://js.stripe.com/v3/fingerprinted/img/stripe_logo-4e5c05e785.svg" 
-              alt="Stripe" 
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://js.stripe.com/v3/fingerprinted/img/stripe_logo-4e5c05e785.svg"
+              alt="Stripe"
               className="h-4"
             />
           </div>
