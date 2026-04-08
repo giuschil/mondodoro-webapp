@@ -246,11 +246,12 @@ export default function FaqPage() {
         <div className="mt-12 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 p-8 text-center text-white">
           <h3 className="text-xl font-bold mb-2">Non hai trovato la risposta?</h3>
           <p className="text-amber-100 text-sm mb-6">Il nostro team è pronto ad aiutarti — ti rispondiamo entro 24 ore.</p>
-          <Link href="/contattaci">
-            <Button size="lg" className="bg-white text-amber-700 hover:bg-amber-50 shadow-none">
-              Contattaci
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+          <Link
+            href="/contattaci"
+            className="inline-flex items-center justify-center rounded-md font-medium h-11 px-8 text-base bg-white text-amber-700 hover:bg-amber-50 transition-colors"
+          >
+            Contattaci
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </div>
       </section>

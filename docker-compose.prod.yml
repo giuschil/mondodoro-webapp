@@ -52,6 +52,7 @@ services:
       - NEXT_PUBLIC_API_URL=/api
       - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
       - NODE_ENV=production
+      - BREVO_API_KEY=${BREVO_API_KEY}
     depends_on:
       - backend
 
