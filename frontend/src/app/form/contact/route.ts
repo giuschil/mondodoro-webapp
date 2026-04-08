@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     if (!emailRes.ok) {
       const err = await emailRes.text();
       console.error('Brevo email error:', err);
-      return NextResponse.json({ error: `Brevo error: ${err}` }, { status: 500 });
+      return NextResponse.json({ error: 'Errore durante l\'invio. Scrivici a info@listdreams.it' }, { status: 500 });
     }
 
     // 2. Add/update contact in Brevo (non-blocking — don't fail if this errors)

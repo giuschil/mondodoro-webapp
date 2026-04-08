@@ -28,7 +28,7 @@ export default function ContattaciPage() {
     setErrorMsg('');
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('/form/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
