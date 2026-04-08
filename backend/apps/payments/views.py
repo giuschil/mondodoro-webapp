@@ -1,6 +1,10 @@
 import stripe
 import json
+import logging
+import traceback
 from decimal import Decimal
+
+logger = logging.getLogger(__name__)
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -223,13 +227,15 @@ def create_payment_intent_view(request):
             'checkout_url': payment_intent_obj.client_secret,  # This is the checkout URL
             'session_id': payment_intent_obj.stripe_payment_intent_id
         })
-        
+
     except stripe.StripeError as e:
+        logger.error("Stripe error in create_payment_intent: %s", str(e))
         return Response(
             {'error': f'Stripe error: {str(e)}'},
             status=status.HTTP_400_BAD_REQUEST
         )
     except Exception as e:
+        logger.error("Unexpected error in create_payment_intent:\n%s", traceback.format_exc())
         return Response(
             {'error': f'Server error: {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
