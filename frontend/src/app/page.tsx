@@ -17,20 +17,20 @@ const HOW_IT_WORKS = [
   {
     step: '01',
     icon: Gift,
-    title: 'Crea la tua lista',
-    desc: 'Il gioielliere configura una lista regalo o una raccolta fondi in pochi minuti, con importo obiettivo e prodotti.',
+    title: 'Crea la lista',
+    desc: 'Configuri la lista nozze o raccolta fondi in pochi minuti: scegli i prodotti, imposti l\'importo obiettivo, sei pronto.',
   },
   {
     step: '02',
     icon: Users,
     title: 'Condividi il link',
-    desc: 'Un link univoco e sicuro viene condiviso con amici e familiari via WhatsApp, email o social.',
+    desc: 'Il tuo cliente riceve un link univoco da condividere via WhatsApp, email o social. Gli invitati lo aprono, scelgono quanto contribuire, pagano.',
   },
   {
     step: '03',
     icon: CreditCard,
-    title: 'Pagamenti automatici',
-    desc: 'I contributori pagano online con carta. I fondi arrivano direttamente sul conto del gioielliere via Stripe.',
+    title: 'I fondi arrivano a te',
+    desc: 'Nessun intermediario, nessuna attesa. I pagamenti transitano su Stripe e atterrano direttamente sul tuo conto.',
   },
 ];
 
@@ -38,32 +38,32 @@ const FEATURES = [
   {
     icon: Zap,
     title: 'Setup in 2 minuti',
-    desc: 'Registrazione veloce, nessuna configurazione tecnica richiesta.',
+    desc: 'Registrazione veloce, nessuna configurazione tecnica. Sei operativo in meno di 120 secondi.',
   },
   {
     icon: Shield,
-    title: 'Pagamenti sicuri SSL',
-    desc: 'Tutti i pagamenti transitano su Stripe, il circuito più sicuro al mondo.',
+    title: 'Pagamenti 100% sicuri',
+    desc: 'Tutti i pagamenti transitano su Stripe, il circuito certificato PCI-DSS usato da Amazon e Google.',
   },
   {
     icon: TrendingUp,
     title: 'Dashboard in tempo reale',
-    desc: 'Monitora contributi, importi raccolti e progressi da qualsiasi dispositivo.',
+    desc: 'Monitora contributi, importi raccolti e progressi da qualsiasi dispositivo, in qualsiasi momento.',
   },
   {
     icon: Lock,
-    title: 'Commissioni trasparenti',
-    desc: 'Nessun costo fisso. Paghi solo una piccola percentuale sulle transazioni reali.',
+    title: 'Commissioni solo sul venduto',
+    desc: 'Nessun costo fisso, nessun abbonamento. Paghi solo una piccola percentuale sulle transazioni reali.',
   },
   {
     icon: Users,
-    title: 'Link anonimi',
-    desc: 'I contributori possono donare in modo anonimo se preferiscono.',
+    title: 'Contributi anonimi',
+    desc: 'I contributori possono donare in modo anonimo se preferiscono, per maggiore privacy.',
   },
   {
     icon: Gift,
-    title: 'Liste & Collette',
-    desc: 'Supporta sia liste prodotti che raccolta fondi con importo fisso per contribuente.',
+    title: 'Liste prodotti e collette',
+    desc: 'Gestisci sia liste regalo con prodotti specifici che collette con importo fisso per contribuente.',
   },
 ];
 
@@ -115,29 +115,28 @@ export default function HomePage() {
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-tight tracking-tight mb-6">
-            Liste regalo digitali
+            Liste nozze e collette online.
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-600">
-              per gioiellerie
+              Zero pensieri, pagamenti diretti.
             </span>
           </h1>
 
           <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Crea liste regalo e collette online in pochi minuti.
-            I tuoi clienti condividono il link, gli invitati pagano con carta —
-            i fondi arrivano direttamente a te.
+            ListDreams è la piattaforma usata da 500+ gioiellerie italiane per gestire liste regalo digitali.
+            I tuoi clienti condividono un link, gli invitati pagano con carta, i fondi arrivano sul tuo conto.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register?role=jeweler">
               <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-amber-200">
-                <Gift className="mr-2 h-5 w-5" />
-                Sono un Gioielliere
+                Crea il tuo account gratuito
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/lists">
+            <Link href="#come-funziona">
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                Visualizza una lista demo
+                Guarda come funziona
+                <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -179,7 +178,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-2">Come funziona</p>
-            <h2 className="text-4xl font-bold text-gray-900">Semplice come 1, 2, 3</h2>
+            <h2 className="text-4xl font-bold text-gray-900">Tre passi. Poi ci pensiamo noi.</h2>
             <p className="mt-4 text-lg text-gray-500 max-w-xl mx-auto">
               Nessuna configurazione tecnica. Nessuna integrazione complicata.
             </p>
@@ -212,7 +211,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-2">Funzionalità</p>
-            <h2 className="text-4xl font-bold text-gray-900">Tutto ciò di cui hai bisogno</h2>
+            <h2 className="text-4xl font-bold text-gray-900">Tutto quello che ti serve. Niente di superfluo.</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -238,10 +237,12 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto text-center">
           <Sparkles className="h-10 w-10 text-amber-400 mx-auto mb-6" />
           <h2 className="text-4xl font-bold text-white mb-4">
-            Pronto a digitalizare le tue liste regalo?
+            Centinaia di gioiellerie hanno già fatto il salto. E tu?
           </h2>
-          <p className="text-gray-400 text-lg mb-8">
-            Unisciti a centinaia di gioiellerie italiane che usano ListDreams ogni giorno.
+          <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
+            Digitalizzare le tue liste regalo non significa perdere il rapporto con il cliente,
+            significa offrirgli qualcosa che i tuoi concorrenti non hanno ancora.
+            Inizia gratis, senza carta di credito.
           </p>
           <Link href="/register?role=jeweler">
             <Button size="lg" className="shadow-lg shadow-amber-800/30">
