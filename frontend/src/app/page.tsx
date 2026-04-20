@@ -6,6 +6,11 @@ import {
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 
+export const metadata = {
+  title: 'Lista Nozze e Collette Digitali per Gioiellerie – ListDreams',
+  description: 'ListDreams è la piattaforma usata da 500+ gioiellerie italiane per gestire liste nozze digitali e collette online. I tuoi clienti condividono un link, gli invitati pagano con carta, i fondi arrivano direttamente sul tuo conto.',
+};
+
 const STATS = [
   { value: '500+', label: 'Gioiellerie attive' },
   { value: '€2M+', label: 'Raccolti in totale' },
@@ -211,7 +216,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-2">Funzionalità</p>
-            <h2 className="text-4xl font-bold text-gray-900">Tutto quello che ti serve. Niente di superfluo.</h2>
+            <h2 className="text-4xl font-bold text-gray-900">Tutto quello che ti serve per gestire le liste nozze in gioielleria.</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -228,6 +233,53 @@ export default function HomePage() {
                 <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Lista Nozze block ── */}
+      <section id="lista-nozze" className="py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-2">Lista nozze digitale</p>
+            <h2 className="text-4xl font-bold text-gray-900">
+              Lista nozze digitale per gioiellerie: il servizio che gli sposi cercano
+            </h2>
+            <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
+              Sempre più coppie scelgono gioiellerie che offrono una lista nozze online.
+              Con ListDreams puoi attivarla in 2 minuti, senza installazioni e senza costi fissi.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div className="rounded-2xl bg-amber-50 border border-amber-100 p-6">
+              <h3 className="text-base font-semibold text-gray-900 mb-2">Lista nozze prodotti</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Gli sposi scelgono i gioielli dal tuo catalogo. Gli invitati acquistano online con carta.
+                I fondi arrivano direttamente a te.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-amber-50 border border-amber-100 p-6">
+              <h3 className="text-base font-semibold text-gray-900 mb-2">Colletta online</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Preferisci una raccolta fondi libera? Gli sposi fissano l&apos;importo,
+                gli invitati contribuiscono via link. Zero contanti da gestire.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-amber-50 border border-amber-100 p-6">
+              <h3 className="text-base font-semibold text-gray-900 mb-2">Tutto sotto controllo</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Dashboard in tempo reale: vedi quanti hanno contribuito, quanto è stato raccolto
+                e quali liste sono attive. Da qualsiasi dispositivo.
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <Link href="/lista-nozze-gioielleria" className="inline-flex items-center text-amber-600 font-medium hover:text-amber-700 transition-colors">
+              Scopri come funziona la lista nozze digitale
+              <ArrowRight className="ml-1.5 h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>
@@ -256,24 +308,24 @@ export default function HomePage() {
       {/* ── Footer ── */}
       <footer className="bg-gray-950 text-gray-400 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-10 border-b border-gray-800">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-10 border-b border-gray-800">
+            <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="h-6 w-6 text-amber-400" />
                 <span className="text-lg font-bold text-white">ListDreams</span>
               </div>
               <p className="text-sm leading-relaxed">
-                La piattaforma per liste regalo e collette digitali dedicata alle gioiellerie italiane.
+                La piattaforma per liste nozze digitali e collette online dedicata alle gioiellerie italiane.
               </p>
             </div>
 
             <div>
-              <h4 className="text-sm font-semibold text-white mb-4">Prodotto</h4>
+              <h4 className="text-sm font-semibold text-white mb-4">Servizi</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><Link href="#come-funziona" className="hover:text-white transition-colors">Come funziona</Link></li>
-                <li><Link href="#funzionalita" className="hover:text-white transition-colors">Funzionalità</Link></li>
+                <li><Link href="/lista-nozze-gioielleria" className="hover:text-white transition-colors">Lista nozze gioielleria</Link></li>
+                <li><Link href="/colletta-online-gioielleria" className="hover:text-white transition-colors">Colletta online</Link></li>
+                <li><Link href="/software-gestionale-lista-nozze" className="hover:text-white transition-colors">Software gestionale</Link></li>
                 <li><Link href="/prezzi" className="hover:text-white transition-colors">Prezzi</Link></li>
-                <li><Link href="/lists" className="hover:text-white transition-colors">Galleria liste</Link></li>
               </ul>
             </div>
 
