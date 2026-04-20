@@ -33,6 +33,10 @@ const nextConfig = {
         hostname: 'www.listdreams.it',
         pathname: '/media/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
     ],
   },
   async rewrites() {

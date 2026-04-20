@@ -330,8 +330,9 @@ export default function HomePage() {
             </div>
 
             <div>
-              <h4 className="text-sm font-semibold text-white mb-4">Supporto</h4>
+              <h4 className="text-sm font-semibold text-white mb-4">Risorse</h4>
               <ul className="space-y-2.5 text-sm">
+                <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
                 <li><Link href="/contattaci" className="hover:text-white transition-colors">Contattaci</Link></li>
                 <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
                 <li><Link href="/centro-aiuto" className="hover:text-white transition-colors">Centro aiuto</Link></li>
