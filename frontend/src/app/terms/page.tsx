@@ -311,13 +311,6 @@ export default function TermsPage() {
           ))}
         </div>
 
-        <div className="mt-12 rounded-2xl bg-amber-50 border border-amber-100 p-6 text-sm text-amber-800">
-          <p className="font-semibold mb-2">Nota</p>
-          <p>
-            Prima di pubblicare, compila i placeholder tra parentesi quadre con i dati legali della tua società
-            e fai revisionare il documento da un avvocato specializzato in diritto commerciale e digitale.
-          </p>
-        </div>
       </main>
 
       <footer className="border-t border-gray-100 bg-gray-50 mt-12">
