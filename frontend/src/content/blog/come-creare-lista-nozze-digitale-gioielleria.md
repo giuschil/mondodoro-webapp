@@ -55,7 +55,7 @@ Piattaforme come ListDreams sono pensate esattamente per questo: permettono ai g
 
 Una volta creata la lista, gli sposi devono poterla condividere facilmente. Oggi questo significa un link — non un PDF, non un foglio stampato.
 
-Con un link univoco, gli invitati possono accedere alla lista da smartphone, vedere cosa è già stato scelto, contribuire a un prodotto o a uno di importo più alto, e pagare in autonomia. Tutto senza chiamare la gioielleria.
+Con un link univoco, gli invitati possono accedere alla lista da smartphone, vedere cosa è già stato scelto, scegliere un prodotto o contribuire a uno di importo più alto, e pagare in autonomia. Tutto senza chiamare la gioielleria.
 
 Questo è comodissimo per gli invitati che abitano lontano o che preferiscono fare tutto online — e sono sempre di più.
 
@@ -83,4 +83,4 @@ Non c'è niente di sbagliato nel fare le cose come si è sempre fatto, ma se vuo
 
 Le gioiellerie che usano ListDreams segnalano meno tempo dedicato alla gestione amministrativa, meno errori sui pagamenti, e clienti — sposi e invitati — più soddisfatti perché il processo è semplice e trasparente.
 
-Vuoi provarlo nella tua gioielleria? Crea il tuo account su [ListDreams](/register?role=jeweler) — gratuito, attivo in 2 minuti, senza costi fissi.
+Vuoi provarlo nella tua gioielleria? Crea il tuo account su [ListDreams](/register?role=jeweler) — gratuito, attivo in 2 minuti, senza costi fissi. [Prova gratis →](/register?role=jeweler)
