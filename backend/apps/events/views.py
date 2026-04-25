@@ -4,7 +4,6 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
@@ -13,9 +12,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 
-from .models import Event, Booking
+from .models import Event, EventSlot, Booking
 from .serializers import (
     EventSerializer, EventCreateSerializer, EventPublicSerializer,
+    EventSlotSerializer, EventSlotCreateSerializer,
     BookingSerializer, BookingCreateSerializer,
 )
 from apps.accounts.models import User
@@ -45,7 +45,7 @@ class EventListCreateView(generics.ListCreateAPIView):
         return EventSerializer
 
     def get_queryset(self):
-        return Event.objects.filter(jeweler=self.request.user)
+        return Event.objects.filter(jeweler=self.request.user).prefetch_related('slots__bookings')
 
     def perform_create(self, serializer):
         serializer.save(jeweler=self.request.user)
@@ -63,7 +63,7 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EventSerializer
 
     def get_queryset(self):
-        return Event.objects.filter(jeweler=self.request.user)
+        return Event.objects.filter(jeweler=self.request.user).prefetch_related('slots__bookings')
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -72,6 +72,58 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(EventSerializer(instance).data)
+
+
+class EventSlotsView(generics.ListCreateAPIView):
+    """Jeweler: list or create slots for an event."""
+    permission_classes = [IsJewelerOwner]
+    serializer_class = EventSlotSerializer
+
+    def get_event(self):
+        return get_object_or_404(Event, pk=self.kwargs['pk'], jeweler=self.request.user)
+
+    def get_queryset(self):
+        event = self.get_event()
+        return event.slots.prefetch_related('bookings')
+
+    def create(self, request, *args, **kwargs):
+        event = self.get_event()
+        data = request.data
+
+        # Bulk create if list
+        if isinstance(data, list):
+            created = []
+            for item in data:
+                serializer = EventSlotCreateSerializer(data=item)
+                serializer.is_valid(raise_exception=True)
+                slot = serializer.save(event=event)
+                created.append(slot)
+            output = EventSlotSerializer(created, many=True)
+            return Response(output.data, status=status.HTTP_201_CREATED)
+
+        # Single slot
+        serializer = EventSlotCreateSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        slot = serializer.save(event=event)
+        return Response(EventSlotSerializer(slot).data, status=status.HTTP_201_CREATED)
+
+
+class EventSlotDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Jeweler: retrieve, update, or delete a single slot."""
+    permission_classes = [IsJewelerOwner]
+    serializer_class = EventSlotSerializer
+
+    def get_object(self):
+        event = get_object_or_404(Event, pk=self.kwargs['pk'], jeweler=self.request.user)
+        return get_object_or_404(EventSlot, pk=self.kwargs['slot_pk'], event=event)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', True)
+        instance = self.get_object()
+        serializer = EventSlotCreateSerializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(EventSlotSerializer(instance).data)
 
 
 @extend_schema(summary="Public event detail", tags=["Events Public"])
@@ -90,7 +142,7 @@ class EventBookingsView(generics.ListAPIView):
 
     def get_queryset(self):
         event = get_object_or_404(Event, pk=self.kwargs['pk'], jeweler=self.request.user)
-        return event.bookings.all()
+        return Booking.objects.filter(slot__event=event).select_related('slot')
 
     def get_object(self):
         return get_object_or_404(Event, pk=self.kwargs['pk'], jeweler=self.request.user)
@@ -106,22 +158,25 @@ def create_booking_view(request, pk):
     serializer = BookingCreateSerializer(data=request.data, context={'event': event})
     serializer.is_valid(raise_exception=True)
 
-    slot_time = serializer.validated_data['slot_time']
+    slot = serializer.context['slot']
     payment_method = serializer.validated_data['payment_method']
 
     # Check slot availability
-    booked_count = event.bookings.filter(
-        slot_time=slot_time,
-        payment_status__in=[Booking.PaymentStatus.PAID, Booking.PaymentStatus.PENDING],
-    ).count()
-    if booked_count >= event.max_attendees_per_slot:
+    if not slot.is_available:
         return Response({'error': 'Questo slot non è più disponibile.'}, status=status.HTTP_409_CONFLICT)
 
     # Create booking
-    booking = serializer.save(event=event)
+    booking = Booking.objects.create(
+        slot=slot,
+        guest_name=serializer.validated_data['guest_name'],
+        guest_email=serializer.validated_data['guest_email'],
+        guest_phone=serializer.validated_data.get('guest_phone', ''),
+        guest_message=serializer.validated_data.get('guest_message', ''),
+        payment_method=payment_method,
+    )
 
-    # Free event or in-person payment → mark as paid/pending and return
-    if event.is_free:
+    # Free slot or in-person payment
+    if slot.is_free:
         booking.payment_status = Booking.PaymentStatus.PAID
         booking.save()
         return Response(
@@ -137,7 +192,7 @@ def create_booking_view(request, pk):
 
     # Online payment → create Stripe Checkout session
     try:
-        checkout_url = _create_event_checkout_session(event, booking)
+        checkout_url = _create_event_checkout_session(slot.event, slot, booking)
         booking.stripe_session_id = checkout_url['session_id']
         booking.save()
         return Response(
@@ -150,14 +205,14 @@ def create_booking_view(request, pk):
         return Response({'error': 'Errore nel pagamento. Riprova.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def _create_event_checkout_session(event, booking):
+def _create_event_checkout_session(event, slot, booking):
     stripe.api_key = settings.STRIPE_SECRET_KEY
-    amount_cents = int(event.price_per_slot * 100)
+    amount_cents = int(slot.price * 100)
 
     platform_settings = PlatformSettings.load()
     fee_pct = platform_settings.platform_fee_percentage
     fee_fixed = platform_settings.platform_fee_fixed
-    fee_amount = (Decimal(str(event.price_per_slot)) * fee_pct / 100) + fee_fixed
+    fee_amount = (Decimal(str(slot.price)) * fee_pct / 100) + fee_fixed
     fee_cents = int(fee_amount * 100)
 
     base_url = getattr(settings, 'BASE_URL', 'https://www.listdreams.it')
@@ -180,7 +235,7 @@ def _create_event_checkout_session(event, booking):
                 'currency': 'eur',
                 'product_data': {
                     'name': f'Prenotazione: {event.title}',
-                    'description': f'Slot ore {booking.slot_time.strftime("%H:%M")} — {event.date.strftime("%d/%m/%Y")}',
+                    'description': f'Slot ore {slot.start_time.strftime("%H:%M")} — {event.date.strftime("%d/%m/%Y")}',
                 },
                 'unit_amount': amount_cents,
             },
@@ -192,7 +247,7 @@ def _create_event_checkout_session(event, booking):
         'metadata': {
             'booking_id': str(booking.id),
             'event_id': str(event.id),
-            'slot_time': str(booking.slot_time),
+            'slot_id': str(slot.id),
         },
         'customer_email': booking.guest_email,
     }
@@ -239,7 +294,7 @@ def event_stripe_webhook(request):
 def update_booking_status_view(request, pk, booking_pk):
     """Jeweler can update booking payment_status (e.g., mark in-person as paid)."""
     event = get_object_or_404(Event, pk=pk, jeweler=request.user)
-    booking = get_object_or_404(Booking, pk=booking_pk, event=event)
+    booking = get_object_or_404(Booking, pk=booking_pk, slot__event=event)
 
     new_status = request.data.get('payment_status')
     if new_status not in [s.value for s in Booking.PaymentStatus]:

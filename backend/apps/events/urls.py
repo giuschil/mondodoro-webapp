@@ -7,6 +7,8 @@ urlpatterns = [
     # Jeweler dashboard endpoints
     path('', views.EventListCreateView.as_view(), name='event-list-create'),
     path('<uuid:pk>/', views.EventDetailView.as_view(), name='event-detail'),
+    path('<uuid:pk>/slots/', views.EventSlotsView.as_view(), name='event-slots'),
+    path('<uuid:pk>/slots/<uuid:slot_pk>/', views.EventSlotDetailView.as_view(), name='event-slot-detail'),
     path('<uuid:pk>/bookings/', views.EventBookingsView.as_view(), name='event-bookings'),
     path('<uuid:pk>/bookings/<uuid:booking_pk>/status/', views.update_booking_status_view, name='booking-status'),
 
