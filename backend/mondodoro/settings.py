@@ -69,8 +69,9 @@ INSTALLED_APPS = [
     
     # Local apps
     "apps.accounts.apps.AccountsConfig",
-    "apps.gift_lists.apps.GiftListsConfig", 
+    "apps.gift_lists.apps.GiftListsConfig",
     "apps.payments.apps.PaymentsConfig",
+    "apps.events.apps.EventsConfig",
 ]
 
 MIDDLEWARE = [
