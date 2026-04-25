@@ -211,4 +211,113 @@ export const paymentsAPI = {
   },
 };
 
+// Events API
+export const eventsAPI = {
+  getAll: async (params?: { status?: string; page?: number }): Promise<{ results: Event[]; count: number }> => {
+    const response = await api.get('/events/', { params });
+    return response.data;
+  },
+
+  getById: async (id: string): Promise<Event> => {
+    const response = await api.get(`/events/${id}/`);
+    return response.data;
+  },
+
+  getPublic: async (id: string): Promise<Event> => {
+    const response = await api.get(`/events/${id}/public/`);
+    return response.data;
+  },
+
+  create: async (data: {
+    title: string;
+    description?: string;
+    location?: string;
+    date: string;
+    start_time: string;
+    end_time: string;
+    slot_duration_minutes: number;
+    price_per_slot: number;
+    max_attendees_per_slot: number;
+    status: string;
+  }): Promise<Event> => {
+    const response = await api.post('/events/', data);
+    return response.data;
+  },
+
+  update: async (id: string, data: Partial<Event>): Promise<Event> => {
+    const response = await api.patch(`/events/${id}/`, data);
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/events/${id}/`);
+  },
+
+  getBookings: async (eventId: string): Promise<{ results: Booking[] }> => {
+    const response = await api.get(`/events/${eventId}/bookings/`);
+    return response.data;
+  },
+
+  createBooking: async (eventId: string, data: {
+    guest_name: string;
+    guest_email: string;
+    guest_phone?: string;
+    guest_message?: string;
+    slot_time: string;
+    payment_method: 'online' | 'in_person';
+  }): Promise<{ booking: Booking; checkout_url: string | null }> => {
+    const response = await api.post(`/events/${eventId}/book/`, data);
+    return response.data;
+  },
+
+  updateBookingStatus: async (eventId: string, bookingId: string, paymentStatus: string): Promise<Booking> => {
+    const response = await api.patch(`/events/${eventId}/bookings/${bookingId}/status/`, { payment_status: paymentStatus });
+    return response.data;
+  },
+};
+
+export interface Event {
+  id: string;
+  title: string;
+  description?: string;
+  location?: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  slot_duration_minutes: number;
+  price_per_slot: string;
+  max_attendees_per_slot: number;
+  status: string;
+  status_display: string;
+  is_free: boolean;
+  slots_info: SlotInfo[];
+  bookings_count: number;
+  created_at: string;
+  updated_at: string;
+  jeweler_name?: string;
+}
+
+export interface SlotInfo {
+  time: string;
+  available: boolean;
+  bookings_count: number;
+  max_attendees: number;
+}
+
+export interface Booking {
+  id: string;
+  guest_name: string;
+  guest_email: string;
+  guest_phone?: string;
+  guest_message?: string;
+  slot_time: string;
+  payment_method: 'online' | 'in_person';
+  payment_method_display: string;
+  payment_status: 'pending' | 'paid' | 'cancelled';
+  payment_status_display: string;
+  stripe_session_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export default api;

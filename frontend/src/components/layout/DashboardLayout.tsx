@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { Sparkles, Gift, User, LogOut, Menu, X, LayoutDashboard } from 'lucide-react';
+import { Sparkles, Gift, User, LogOut, Menu, X, LayoutDashboard, CalendarDays } from 'lucide-react';
 import { useState } from 'react';
 
 interface DashboardLayoutProps {
@@ -36,6 +36,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Liste Regalo', href: '/dashboard/gift-lists', icon: Gift },
+    { name: 'Eventi', href: '/dashboard/events', icon: CalendarDays },
     { name: 'Profilo', href: '/dashboard/profile', icon: User },
   ];
 
