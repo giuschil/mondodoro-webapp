@@ -213,17 +213,17 @@ export const paymentsAPI = {
 
 // Events API
 export const eventsAPI = {
-  getAll: async (params?: { status?: string; page?: number }): Promise<{ results: Event[]; count: number }> => {
+  getAll: async (params?: { status?: string; page?: number }): Promise<{ results: EventItem[]; count: number }> => {
     const response = await api.get('/events/', { params });
     return response.data;
   },
 
-  getById: async (id: string): Promise<Event> => {
+  getById: async (id: string): Promise<EventItem> => {
     const response = await api.get(`/events/${id}/`);
     return response.data;
   },
 
-  getPublic: async (id: string): Promise<Event> => {
+  getPublic: async (id: string): Promise<EventItem> => {
     const response = await api.get(`/events/${id}/public/`);
     return response.data;
   },
@@ -233,18 +233,13 @@ export const eventsAPI = {
     description?: string;
     location?: string;
     date: string;
-    start_time: string;
-    end_time: string;
-    slot_duration_minutes: number;
-    price_per_slot: number;
-    max_attendees_per_slot: number;
     status: string;
-  }): Promise<Event> => {
+  }): Promise<EventItem> => {
     const response = await api.post('/events/', data);
     return response.data;
   },
 
-  update: async (id: string, data: Partial<Event>): Promise<Event> => {
+  update: async (id: string, data: Partial<EventItem>): Promise<EventItem> => {
     const response = await api.patch(`/events/${id}/`, data);
     return response.data;
   },
@@ -258,12 +253,54 @@ export const eventsAPI = {
     return response.data;
   },
 
+  getSlots: async (eventId: string): Promise<EventSlot[]> => {
+    const response = await api.get(`/events/${eventId}/slots/`);
+    return response.data;
+  },
+
+  createSlot: async (eventId: string, data: {
+    start_time: string;
+    end_time?: string;
+    price: number;
+    max_attendees: number;
+    notes?: string;
+  }): Promise<EventSlot> => {
+    const response = await api.post(`/events/${eventId}/slots/`, data);
+    return response.data;
+  },
+
+  createSlots: async (eventId: string, data: Array<{
+    start_time: string;
+    end_time?: string;
+    price: number;
+    max_attendees: number;
+    notes?: string;
+  }>): Promise<EventSlot[]> => {
+    const response = await api.post(`/events/${eventId}/slots/`, data);
+    return response.data;
+  },
+
+  updateSlot: async (eventId: string, slotId: string, data: Partial<{
+    start_time: string;
+    end_time: string;
+    price: number;
+    max_attendees: number;
+    notes: string;
+  }>): Promise<EventSlot> => {
+    const response = await api.patch(`/events/${eventId}/slots/${slotId}/`, data);
+    return response.data;
+  },
+
+  deleteSlot: async (eventId: string, slotId: string): Promise<void> => {
+    await api.delete(`/events/${eventId}/slots/${slotId}/`);
+  },
+
   createBooking: async (eventId: string, data: {
     guest_name: string;
     guest_email: string;
     guest_phone?: string;
     guest_message?: string;
-    slot_time: string;
+    slot_id: string;
     payment_method: 'online' | 'in_person';
   }): Promise<{ booking: Booking; checkout_url: string | null }> => {
     const response = await api.post(`/events/${eventId}/book/`, data);
@@ -276,32 +313,34 @@ export const eventsAPI = {
   },
 };
 
-export interface Event {
+export interface EventSlot {
+  id: string;
+  start_time: string;
+  end_time?: string;
+  price: string;
+  max_attendees: number;
+  notes?: string;
+  is_free: boolean;
+  booked_count: number;
+  available_spots: number;
+  is_available: boolean;
+  bookings?: Booking[];
+}
+
+export interface EventItem {
   id: string;
   title: string;
   description?: string;
   location?: string;
   date: string;
-  start_time: string;
-  end_time: string;
-  slot_duration_minutes: number;
-  price_per_slot: string;
-  max_attendees_per_slot: number;
   status: string;
   status_display: string;
-  is_free: boolean;
-  slots_info: SlotInfo[];
+  slots: EventSlot[];
+  slots_count: number;
   bookings_count: number;
   created_at: string;
   updated_at: string;
   jeweler_name?: string;
-}
-
-export interface SlotInfo {
-  time: string;
-  available: boolean;
-  bookings_count: number;
-  max_attendees: number;
 }
 
 export interface Booking {

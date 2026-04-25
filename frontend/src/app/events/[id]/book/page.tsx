@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { eventsAPI, Event, SlotInfo } from '@/lib/api';
+import { eventsAPI, EventItem, EventSlot } from '@/lib/api';
 import {
   CalendarDays,
   Clock,
@@ -11,6 +11,7 @@ import {
   Euro,
   CheckCircle,
   Sparkles,
+  Users,
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -24,9 +25,9 @@ export default function PublicBookingPage() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
 
-  const [event, setEvent] = useState<Event | null>(null);
+  const [event, setEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<EventSlot | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -47,7 +48,6 @@ export default function PublicBookingPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Handle return from Stripe
   useEffect(() => {
     const payment = searchParams.get('payment');
     if (payment === 'success') {
@@ -78,7 +78,7 @@ export default function PublicBookingPage() {
     try {
       const result = await eventsAPI.createBooking(id, {
         ...form,
-        slot_time: selectedSlot!,
+        slot_id: selectedSlot!.id,
       });
 
       if (result.checkout_url) {
@@ -90,7 +90,6 @@ export default function PublicBookingPage() {
       const data = err?.response?.data;
       if (err?.response?.status === 409) {
         toast.error('Slot non più disponibile. Scegli un altro orario.');
-        // Refresh event to update slot availability
         eventsAPI.getPublic(id).then(setEvent).catch(() => {});
         setSelectedSlot(null);
       } else if (data?.error) {
@@ -116,7 +115,7 @@ export default function PublicBookingPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-gray-600 text-lg mb-2">Evento non disponibile</p>
-          <p className="text-gray-400 text-sm">L'evento potrebbe essere terminato o non essere attivo.</p>
+          <p className="text-gray-400 text-sm">{"L'evento potrebbe essere terminato o non essere attivo."}</p>
         </div>
       </div>
     );
@@ -134,18 +133,20 @@ export default function PublicBookingPage() {
           </p>
           {selectedSlot && (
             <p className="text-gray-600 text-sm">
-              Slot: ore <strong>{selectedSlot}</strong> del <strong>{formatDate(event.date)}</strong>
+              Slot: ore <strong>{selectedSlot.start_time.slice(0, 5)}</strong> del <strong>{formatDate(event.date)}</strong>
             </p>
           )}
           <p className="text-gray-400 text-sm mt-4">
-            Riceverai una conferma via email all'indirizzo fornito.
+            Riceverai una conferma via email.
           </p>
         </div>
       </div>
     );
   }
 
-  const availableSlots = event.slots_info.filter((s) => s.available);
+  const availableSlots = event.slots.filter((s) => s.is_available);
+  const slotIsSelected = selectedSlot !== null;
+  const selectedSlotIsFree = selectedSlot?.is_free ?? true;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -171,10 +172,6 @@ export default function PublicBookingPage() {
               <CalendarDays className="h-4 w-4 text-amber-500 shrink-0" />
               {formatDate(event.date)}
             </div>
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-amber-500 shrink-0" />
-              {event.start_time.slice(0, 5)} – {event.end_time.slice(0, 5)}
-            </div>
             {event.location && (
               <div className="flex items-center gap-2 col-span-2">
                 <MapPin className="h-4 w-4 text-amber-500 shrink-0" />
@@ -182,8 +179,8 @@ export default function PublicBookingPage() {
               </div>
             )}
             <div className="flex items-center gap-2">
-              <Euro className="h-4 w-4 text-amber-500 shrink-0" />
-              {event.is_free ? 'Gratuito' : `€${parseFloat(event.price_per_slot).toFixed(2)} per appuntamento`}
+              <Users className="h-4 w-4 text-amber-500 shrink-0" />
+              {availableSlots.length} slot disponibili
             </div>
           </div>
         </div>
@@ -196,33 +193,64 @@ export default function PublicBookingPage() {
               Scegli il tuo orario
             </h2>
 
-            {availableSlots.length === 0 ? (
+            {event.slots.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Clock className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                <p className="font-medium">Nessuno slot disponibile</p>
+                <p className="text-sm mt-1">Non ci sono slot configurati per questo evento.</p>
+              </div>
+            ) : availableSlots.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <Clock className="h-10 w-10 text-gray-300 mx-auto mb-3" />
                 <p className="font-medium">Tutti gli slot sono al completo</p>
-                <p className="text-sm mt-1">Non ci sono più posti disponibili per questo evento</p>
+                <p className="text-sm mt-1">Non ci sono più posti disponibili per questo evento.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                {event.slots_info.map((slot) => (
-                  <button
-                    key={slot.time}
-                    type="button"
-                    disabled={!slot.available}
-                    onClick={() => { setSelectedSlot(slot.time); setErrors((prev) => ({ ...prev, slot: '' })); }}
-                    className={`
-                      py-2.5 px-3 rounded-xl text-sm font-medium border transition-all
-                      ${!slot.available
-                        ? 'bg-gray-100 text-gray-300 border-gray-100 cursor-not-allowed line-through'
-                        : selectedSlot === slot.time
-                          ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                          : 'bg-white text-gray-700 border-gray-200 hover:border-amber-300 hover:bg-amber-50'
-                      }
-                    `}
-                  >
-                    {slot.time}
-                  </button>
-                ))}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {event.slots.map((slot: EventSlot) => {
+                  const isSelected = selectedSlot?.id === slot.id;
+                  const disabled = !slot.is_available;
+                  return (
+                    <button
+                      key={slot.id}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => {
+                        setSelectedSlot(slot);
+                        setErrors((prev) => ({ ...prev, slot: '' }));
+                        // Reset payment method if slot is free
+                        if (slot.is_free) {
+                          set('payment_method', 'in_person');
+                        }
+                      }}
+                      className={`
+                        flex flex-col items-start p-3 rounded-xl border transition-all text-left
+                        ${disabled
+                          ? 'bg-gray-100 text-gray-300 border-gray-100 cursor-not-allowed'
+                          : isSelected
+                            ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-amber-300 hover:bg-amber-50'
+                        }
+                      `}
+                    >
+                      <span className="font-semibold text-sm">
+                        {slot.start_time.slice(0, 5)}
+                        {slot.end_time ? ` – ${slot.end_time.slice(0, 5)}` : ''}
+                      </span>
+                      <span className={`text-xs mt-0.5 ${isSelected ? 'text-amber-100' : disabled ? 'text-gray-300' : 'text-gray-500'}`}>
+                        {slot.is_free ? 'Gratuito' : `€${parseFloat(slot.price).toFixed(2)}`}
+                      </span>
+                      <span className={`text-xs mt-0.5 ${isSelected ? 'text-amber-100' : disabled ? 'text-gray-300' : 'text-gray-400'}`}>
+                        {disabled ? 'Completo' : `${slot.available_spots} ${slot.available_spots === 1 ? 'posto' : 'posti'}`}
+                      </span>
+                      {slot.notes && (
+                        <span className={`text-xs mt-0.5 italic truncate w-full ${isSelected ? 'text-amber-100' : 'text-gray-400'}`}>
+                          {slot.notes}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
             {errors.slot && <p className="text-xs text-red-500 mt-2">{errors.slot}</p>}
@@ -230,9 +258,7 @@ export default function PublicBookingPage() {
 
           {/* Guest info */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-            <h2 className="font-semibold text-gray-900 flex items-center gap-2">
-              I tuoi dati
-            </h2>
+            <h2 className="font-semibold text-gray-900">I tuoi dati</h2>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Nome e cognome *</label>
@@ -281,18 +307,18 @@ export default function PublicBookingPage() {
             </div>
           </div>
 
-          {/* Payment method (only if not free) */}
-          {!event.is_free && (
+          {/* Payment method (only if slot is not free) */}
+          {slotIsSelected && !selectedSlotIsFree && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-3">
               <h2 className="font-semibold text-gray-900 flex items-center gap-2">
                 <Euro className="h-5 w-5 text-amber-500" />
-                Pagamento — €{parseFloat(event.price_per_slot).toFixed(2)}
+                {`Pagamento — €${parseFloat(selectedSlot!.price).toFixed(2)}`}
               </h2>
 
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { value: 'online', label: 'Carta di credito', sub: 'Paga subito online in modo sicuro' },
-                  { value: 'in_person', label: 'In negozio', sub: 'Paghi direttamente all\'appuntamento' },
+                  { value: 'in_person', label: 'In negozio', sub: "Paghi direttamente all'appuntamento" },
                 ].map((opt) => (
                   <button
                     key={opt.value}
@@ -325,10 +351,12 @@ export default function PublicBookingPage() {
                 <div className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
                 Elaborazione...
               </>
-            ) : event.is_free ? (
+            ) : !slotIsSelected ? (
+              'Seleziona uno slot per continuare'
+            ) : selectedSlotIsFree ? (
               'Conferma prenotazione gratuita'
             ) : form.payment_method === 'online' ? (
-              `Prenota e paga €${parseFloat(event.price_per_slot).toFixed(2)}`
+              `Prenota e paga €${parseFloat(selectedSlot!.price).toFixed(2)}`
             ) : (
               'Prenota — pagherai in negozio'
             )}

@@ -3,18 +3,17 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
-import { eventsAPI, Event } from '@/lib/api';
+import { eventsAPI, EventItem } from '@/lib/api';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
 import {
   Plus,
   CalendarDays,
-  Clock,
   MapPin,
-  Euro,
   Eye,
   Trash2,
   Users,
+  Clock,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -39,7 +38,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function EventsPage() {
   const { user } = useAuth();
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -122,7 +121,7 @@ export default function EventsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-gray-400 shrink-0" />
-                    {event.start_time.slice(0, 5)} – {event.end_time.slice(0, 5)} &middot; slot {event.slot_duration_minutes} min
+                    {event.slots_count} slot
                   </div>
                   {event.location && (
                     <div className="flex items-center gap-2">
@@ -130,10 +129,6 @@ export default function EventsPage() {
                       {event.location}
                     </div>
                   )}
-                  <div className="flex items-center gap-2">
-                    <Euro className="h-4 w-4 text-gray-400 shrink-0" />
-                    {event.is_free ? 'Gratuito' : `€${parseFloat(event.price_per_slot).toFixed(2)} / slot`}
-                  </div>
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-gray-400 shrink-0" />
                     {event.bookings_count} prenotazioni
