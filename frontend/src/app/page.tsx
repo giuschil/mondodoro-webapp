@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {
   Gift, Users, CreditCard, Shield, Sparkles,
   ArrowRight, CheckCircle, Star, TrendingUp, Lock, Zap,
-  ChevronRight
+  ChevronRight, CalendarDays,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 
@@ -284,6 +284,57 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Events section ── */}
+      <section id="eventi" className="py-24 bg-gray-50 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-2">Novità — Gestione eventi</p>
+            <h2 className="text-4xl font-bold text-gray-900">
+              I tuoi clienti prenotano da soli. Tu trovi l&apos;agenda piena.
+            </h2>
+            <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
+              Crea eventi con slot prenotabili online — giornate fedi, private shopping, consulenze.
+              Condividi un link e lascia che i clienti scelgano il loro orario.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            {[
+              {
+                icon: CalendarDays,
+                title: 'Crea l\'evento in 2 minuti',
+                desc: 'Inserisci data, orari e durata degli slot. ListDreams genera automaticamente tutti gli appuntamenti disponibili.',
+              },
+              {
+                icon: Users,
+                title: 'I clienti prenotano online',
+                desc: 'Condividi un link su WhatsApp o email. I clienti scelgono lo slot e prenotano in autonomia, anche fuori orario.',
+              },
+              {
+                icon: CreditCard,
+                title: 'Pagamento online o in negozio',
+                desc: 'Puoi richiedere un deposito online con carta o lasciare che il cliente paghi direttamente all\'appuntamento.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6">
+                <div className="h-11 w-11 rounded-xl bg-amber-50 flex items-center justify-center mb-4">
+                  <item.icon className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="text-base font-semibold text-gray-900 mb-1">{item.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link href="/eventi-in-gioielleria" className="inline-flex items-center text-amber-600 font-medium hover:text-amber-700 transition-colors">
+              Scopri come funzionano gli eventi
+              <ArrowRight className="ml-1.5 h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section className="py-20 bg-gray-900 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
@@ -325,6 +376,7 @@ export default function HomePage() {
                 <li><Link href="/lista-nozze-gioielleria" className="hover:text-white transition-colors">Lista nozze gioielleria</Link></li>
                 <li><Link href="/colletta-online-gioielleria" className="hover:text-white transition-colors">Colletta online</Link></li>
                 <li><Link href="/software-gestionale-lista-nozze" className="hover:text-white transition-colors">Software gestionale</Link></li>
+                <li><Link href="/eventi-in-gioielleria" className="hover:text-white transition-colors">Gestione eventi</Link></li>
                 <li><Link href="/prezzi" className="hover:text-white transition-colors">Prezzi</Link></li>
               </ul>
             </div>
