@@ -25,9 +25,9 @@ export const metadata: Metadata = {
 const features = [
   {
     icon: CalendarDays,
-    title: 'Crea l'evento in 2 minuti',
+    title: "Crea l'evento in 2 minuti",
     description:
-      'Inserisci titolo, data, orario di apertura e chiusura. ListDreams genera automaticamente tutti gli slot prenotabili.',
+      "Inserisci titolo, data, orario di apertura e chiusura. ListDreams genera automaticamente tutti gli slot prenotabili.",
   },
   {
     icon: Clock,
@@ -39,7 +39,7 @@ const features = [
     icon: Users,
     title: 'Prenotazione online senza telefonate',
     description:
-      'Condividi il link dell'evento via WhatsApp o email. I clienti scelgono il loro slot e prenotano in autonomia, anche fuori orario.',
+      "Condividi il link dell'evento via WhatsApp o email. I clienti scelgono il loro slot e prenotano in autonomia, anche fuori orario.",
   },
   {
     icon: Euro,
@@ -62,7 +62,7 @@ const useCases = [
   },
   {
     title: 'Consulenza personalizzata',
-    description: 'Appuntamenti per clienti che vogliono un\'esperienza di acquisto dedicata, senza fretta.',
+    description: "Appuntamenti per clienti che vogliono un'esperienza di acquisto dedicata, senza fretta.",
     tag: 'Premium',
   },
   {
@@ -73,10 +73,10 @@ const useCases = [
 ];
 
 const steps = [
-  { number: '01', title: 'Crea l\'evento', description: 'Inserisci data, orari e durata degli slot. Scegli se è gratuito o a pagamento.' },
+  { number: '01', title: "Crea l'evento", description: "Inserisci data, orari e durata degli slot. Scegli se è gratuito o a pagamento." },
   { number: '02', title: 'Condividi il link', description: 'Copia il link di prenotazione e invialo ai tuoi clienti su WhatsApp, email o Instagram.' },
-  { number: '03', title: 'I clienti prenotano', description: 'Scelgono lo slot disponibile, inseriscono i dati e — se hai attivato il pagamento — pagano con carta.' },
-  { number: '04', title: 'Tu gestisci dalla dashboard', description: 'Vedi tutte le prenotazioni slot per slot, conferma o annulla, ed esci con l\'agenda già organizzata.' },
+  { number: '03', title: 'I clienti prenotano', description: "Scelgono lo slot disponibile, inseriscono i dati e — se hai attivato il pagamento — pagano con carta." },
+  { number: '04', title: 'Tu gestisci dalla dashboard', description: "Vedi tutte le prenotazioni slot per slot, conferma o annulla, ed esci con l'agenda già organizzata." },
 ];
 
 export default function EventiGioielleriaPage() {
@@ -105,11 +105,11 @@ export default function EventiGioielleriaPage() {
         <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight mb-6">
           I tuoi clienti prenotano{' '}
           <span className="text-amber-500">da soli</span>.{' '}
-          Tu trovi l'agenda già piena.
+          Tu trovi l&apos;agenda già piena.
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
           Crea eventi con slot prenotabili online — giornate fedi, private shopping, consulenze.
-          Condividi un link, i clienti scelgono l'orario, tu gestisci tutto da un'unica dashboard.
+          Condividi un link, i clienti scelgono l&apos;orario, tu gestisci tutto da un&apos;unica dashboard.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
@@ -157,7 +157,7 @@ export default function EventiGioielleriaPage() {
       {/* How it works — steps */}
       <section className="py-20 max-w-6xl mx-auto px-6">
         <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
-          Dall'idea all'appuntamento in 4 passi
+          Dall&apos;idea all&apos;appuntamento in 4 passi
         </h2>
         <p className="text-gray-600 text-center mb-14 max-w-xl mx-auto">
           Niente agende cartacee. Niente telefonate per fissare gli orari. Tutto online, in automatico.
@@ -180,7 +180,7 @@ export default function EventiGioielleriaPage() {
             Per quali eventi è pensato
           </h2>
           <p className="text-gray-600 text-center mb-12 max-w-xl mx-auto">
-            Dal private shopping alla giornata fedi: ogni evento in gioielleria merita un'esperienza professionale.
+            Dal private shopping alla giornata fedi: ogni evento in gioielleria merita un&apos;esperienza professionale.
           </p>
           <div className="grid sm:grid-cols-2 gap-6">
             {useCases.map((uc) => (
@@ -206,11 +206,11 @@ export default function EventiGioielleriaPage() {
               </h2>
               <ul className="space-y-4">
                 {[
-                  'I clienti prenotano da soli, anche di notte — tu trovi l\'agenda piena al mattino',
+                  "I clienti prenotano da soli, anche di notte — tu trovi l'agenda piena al mattino",
                   'Nessuna telefonata persa per fissare appuntamenti',
                   'Pagamento online opzionale: incassi prima ancora che il cliente arrivi',
-                  'Dashboard con tutti gli slot in un colpo d\'occhio — chi ha prenotato, quando, con quale metodo di pagamento',
-                  'Funziona insieme alle liste nozze: un\'unica piattaforma per tutti i servizi digitali',
+                  "Dashboard con tutti gli slot in un colpo d'occhio — chi ha prenotato, quando, con quale metodo di pagamento",
+                  "Funziona insieme alle liste nozze: un'unica piattaforma per tutti i servizi digitali",
                   'Nessun costo fisso mensile — paghi solo sulla transazione quando attivi il pagamento online',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3">
@@ -227,7 +227,7 @@ export default function EventiGioielleriaPage() {
                 ))}
               </div>
               <blockquote className="text-gray-700 text-sm leading-relaxed mb-4">
-                "Ho creato la mia prima giornata fedi in 10 minuti. Ho condiviso il link nel gruppo WhatsApp degli sposi e il giorno dopo avevo già 8 appuntamenti confermati — senza rispondere a nessuna email."
+                &ldquo;Ho creato la mia prima giornata fedi in 10 minuti. Ho condiviso il link nel gruppo WhatsApp degli sposi e il giorno dopo avevo già 8 appuntamenti confermati — senza rispondere a nessuna email.&rdquo;
               </blockquote>
               <div className="text-sm font-semibold text-gray-900">Gioielleria Ferretti</div>
               <div className="text-xs text-gray-400">Verona</div>
@@ -240,7 +240,7 @@ export default function EventiGioielleriaPage() {
       <section className="bg-gray-900 py-20">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Pronto a riempire l'agenda senza telefonare?
+            Pronto a riempire l&apos;agenda senza telefonare?
           </h2>
           <p className="text-gray-400 mb-8">
             Attiva la gestione eventi in pochi minuti. Nessun costo fisso, nessuna carta di credito richiesta per iniziare.
