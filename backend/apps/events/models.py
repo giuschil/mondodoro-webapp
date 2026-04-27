@@ -1,8 +1,11 @@
 import uuid
+from datetime import timedelta
 from decimal import Decimal
 
 from django.db import models
+from django.db.models import Q
 from django.conf import settings
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -68,8 +71,15 @@ class EventSlot(models.Model):
 
     @property
     def booked_count(self):
+        # Online PENDING bookings expire after 30 min (abandoned Stripe checkouts don't block slots)
+        cutoff = timezone.now() - timedelta(minutes=30)
         return self.bookings.filter(
-            payment_status__in=[Booking.PaymentStatus.PAID, Booking.PaymentStatus.PENDING]
+            Q(payment_status=Booking.PaymentStatus.PAID) |
+            Q(payment_status=Booking.PaymentStatus.PENDING,
+              payment_method=Booking.PaymentMethod.IN_PERSON) |
+            Q(payment_status=Booking.PaymentStatus.PENDING,
+              payment_method=Booking.PaymentMethod.ONLINE,
+              created_at__gte=cutoff)
         ).count()
 
     @property

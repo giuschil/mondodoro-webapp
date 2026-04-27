@@ -26,10 +26,16 @@ jobs:
 
       - name: Inject secrets into VPS .env
         run: |
-          ssh -i ~/.ssh/id_ed25519 root@168.231.85.166 \
-            "grep -q '^BREVO_API_KEY=' /var/www/regalino.it/.env 2>/dev/null \
-              && sed -i 's|^BREVO_API_KEY=.*|BREVO_API_KEY=${{ secrets.BREVO_API_KEY }}|' /var/www/regalino.it/.env \
-              || echo 'BREVO_API_KEY=${{ secrets.BREVO_API_KEY }}' >> /var/www/regalino.it/.env"
+          inject_secret() {
+            local KEY="$1" VAL="$2" FILE="/var/www/regalino.it/.env"
+            grep -q "^${KEY}=" "$FILE" 2>/dev/null \
+              && sed -i "s|^${KEY}=.*|${KEY}=${VAL}|" "$FILE" \
+              || echo "${KEY}=${VAL}" >> "$FILE"
+          }
+          ssh -i ~/.ssh/id_ed25519 root@168.231.85.166 "$(declare -f inject_secret); \
+            inject_secret BREVO_API_KEY '${{ secrets.BREVO_API_KEY }}'; \
+            inject_secret STRIPE_SECRET_KEY '${{ secrets.STRIPE_SECRET_KEY }}'; \
+            inject_secret STRIPE_PUBLISHABLE_KEY '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'"
 
       - name: Deploy on VPS
         run: |
