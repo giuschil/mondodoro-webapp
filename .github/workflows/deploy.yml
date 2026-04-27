@@ -35,7 +35,8 @@ jobs:
           ssh -i ~/.ssh/id_ed25519 root@168.231.85.166 "$(declare -f inject_secret); \
             inject_secret BREVO_API_KEY '${{ secrets.BREVO_API_KEY }}'; \
             inject_secret STRIPE_SECRET_KEY '${{ secrets.STRIPE_SECRET_KEY }}'; \
-            inject_secret STRIPE_PUBLISHABLE_KEY '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'"
+            inject_secret STRIPE_PUBLISHABLE_KEY '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'; \
+            inject_secret STRIPE_EVENTS_WEBHOOK_SECRET '${{ secrets.STRIPE_EVENTS_WEBHOOK_SECRET }}'"
 
       - name: Deploy on VPS
         run: |

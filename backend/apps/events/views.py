@@ -267,7 +267,7 @@ def event_stripe_webhook(request):
     """Handle Stripe webhook for event bookings."""
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE', '')
-    webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', '')
+    webhook_secret = getattr(settings, 'STRIPE_EVENTS_WEBHOOK_SECRET', '')
 
     try:
         event_obj = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)

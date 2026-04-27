@@ -37,6 +37,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lamb
 STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
 STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
+STRIPE_EVENTS_WEBHOOK_SECRET = config('STRIPE_EVENTS_WEBHOOK_SECRET', default='')
 BASE_URL = config('BASE_URL', default='https://www.listdreams.it')
 FRONTEND_URL = config('FRONTEND_URL', default='https://www.listdreams.it')
 
