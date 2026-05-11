@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { X, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
 type DialogType = 'error' | 'success' | 'info';
 
@@ -26,10 +26,10 @@ const DEFAULT_TITLES: Record<DialogType, string> = {
   info: 'Informazione',
 };
 
-const ICON_COLOR: Record<DialogType, string> = {
-  error: '#ef4444',
-  success: '#22c55e',
-  info: '#6b7280',
+const ICONS: Record<DialogType, React.ReactNode> = {
+  error: <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />,
+  success: <CheckCircle className="h-5 w-5 text-primary-600 shrink-0" />,
+  info: <Info className="h-5 w-5 text-secondary-400 shrink-0" />,
 };
 
 export function DialogProvider({ children }: { children: ReactNode }) {
@@ -44,99 +44,65 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     setDialog({ open: true, type, message, title: title || DEFAULT_TITLES[type] });
   }, []);
 
-  const showError = useCallback((message: string, title?: string) => show('error', message, title), [show]);
-  const showSuccess = useCallback((message: string, title?: string) => show('success', message, title), [show]);
-  const showInfo = useCallback((message: string, title?: string) => show('info', message, title), [show]);
+  const showError = useCallback(
+    (message: string, title?: string) => show('error', message, title),
+    [show],
+  );
+  const showSuccess = useCallback(
+    (message: string, title?: string) => show('success', message, title),
+    [show],
+  );
+  const showInfo = useCallback(
+    (message: string, title?: string) => show('info', message, title),
+    [show],
+  );
 
   const close = useCallback(() => setDialog((prev) => ({ ...prev, open: false })), []);
 
   return (
     <DialogContext.Provider value={{ showError, showSuccess, showInfo }}>
       {children}
+
       {dialog.open && (
-        /* Overlay */
         <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-secondary-900/50"
           onClick={close}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0.45)',
-            padding: '16px',
-          }}
         >
-          {/* Modal card */}
           <div
+            className="bg-white rounded-lg shadow-md border border-secondary-200 w-full max-w-sm overflow-hidden"
             onClick={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '16px',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
-              width: '100%',
-              maxWidth: '400px',
-              overflow: 'hidden',
-            }}
           >
             {/* Header */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '20px 24px 16px',
-              borderBottom: '1px solid #f3f4f6',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {dialog.type === 'error' && <AlertCircle size={20} color={ICON_COLOR.error} />}
-                {dialog.type === 'success' && <CheckCircle size={20} color={ICON_COLOR.success} />}
-                {dialog.type === 'info' && <AlertCircle size={20} color={ICON_COLOR.info} />}
-                <span style={{ fontWeight: 600, fontSize: '15px', color: '#111827' }}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-secondary-100">
+              <div className="flex items-center gap-2.5">
+                {ICONS[dialog.type]}
+                <span className="text-secondary-900 font-semibold text-sm">
                   {dialog.title}
                 </span>
               </div>
               <button
                 onClick={close}
                 aria-label="Chiudi"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  borderRadius: '8px',
-                  color: '#9ca3af',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
+                className="text-secondary-400 hover:text-secondary-600 transition-colors rounded p-0.5 hover:bg-secondary-100"
               >
-                <X size={16} />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* Body */}
-            <div style={{ padding: '20px 24px' }}>
-              <p style={{ margin: 0, fontSize: '14px', color: '#374151', lineHeight: '1.6' }}>
+            <div className="px-5 py-4">
+              <p className="text-secondary-600 text-sm leading-relaxed">
                 {dialog.message}
               </p>
             </div>
 
             {/* Footer */}
-            <div style={{ padding: '0 24px 20px', display: 'flex', justifyContent: 'flex-end' }}>
+            <div className="px-5 pb-4 flex justify-end">
               <button
                 onClick={close}
-                style={{
-                  padding: '8px 20px',
-                  backgroundColor: '#111827',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                }}
+                className="h-9 px-4 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               >
-                Chiudi
+                OK
               </button>
             </div>
           </div>
