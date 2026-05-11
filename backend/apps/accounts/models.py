@@ -69,6 +69,11 @@ class User(AbstractUser):
         verbose_name_plural = _('Users')
         ordering = ['-created_at']
     
+    def save(self, *args, **kwargs):
+        self.email = self.email.lower()
+        self.username = self.email
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.get_full_name()} ({self.email})"
     
