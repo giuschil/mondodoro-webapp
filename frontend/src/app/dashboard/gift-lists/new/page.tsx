@@ -16,7 +16,7 @@ import {
   Euro
 } from 'lucide-react';
 import Link from 'next/link';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 interface GiftListItem {
   name: string;
@@ -37,6 +37,7 @@ interface GiftListProduct {
 export default function NewGiftListPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { showError, showSuccess } = useDialog();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -77,13 +78,13 @@ export default function NewGiftListPage() {
     if (file) {
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('L\'immagine deve essere inferiore a 5MB');
+        showError('L\'immagine deve essere inferiore a 5MB');
         return;
       }
       
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        toast.error('Il file deve essere un\'immagine');
+        showError('Il file deve essere un\'immagine');
         return;
       }
       
@@ -191,7 +192,7 @@ export default function NewGiftListPage() {
       }
 
       const newGiftList = await giftListsAPI.create(giftListData);
-      toast.success('Lista regalo creata con successo!');
+      showSuccess('Lista regalo creata con successo!');
       router.push(`/dashboard/gift-lists/${newGiftList.id}`);
     } catch (error: any) {
       console.error('Error creating gift list:', error);
@@ -200,18 +201,18 @@ export default function NewGiftListPage() {
       if (error.response?.data?.non_field_errors) {
         const errorMsg = error.response.data.non_field_errors[0];
         if (errorMsg.includes('Start date cannot be in the past')) {
-          toast.error('La data di inizio non può essere nel passato. Seleziona una data futura.');
+          showError('La data di inizio non può essere nel passato. Seleziona una data futura.');
         } else if (errorMsg.includes('End date must be after start date')) {
-          toast.error('La data di fine deve essere successiva alla data di inizio.');
+          showError('La data di fine deve essere successiva alla data di inizio.');
         } else {
-          toast.error(errorMsg);
+          showError(errorMsg);
         }
       } else if (error.response?.data) {
         // Show first validation error
         const firstError = Object.values(error.response.data)[0];
-        toast.error(Array.isArray(firstError) ? firstError[0] : firstError);
+        showError(Array.isArray(firstError) ? firstError[0] : firstError);
       } else {
-      toast.error('Errore durante la creazione della lista regalo');
+      showError('Errore durante la creazione della lista regalo');
       }
     } finally {
       setLoading(false);

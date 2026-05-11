@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authAPI } from './api';
 import { User, LoginCredentials, RegisterData } from '@/types';
-import toast from 'react-hot-toast';
+import { useDialog } from './dialog-context';
 
 interface AuthContextType {
   user: User | null;
@@ -19,11 +19,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const { showError, showSuccess } = useDialog();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    
+
     if (token && userData) {
       try {
         setUser(JSON.parse(userData));
@@ -42,15 +43,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
       setUser(response.user);
-      toast.success('Accesso effettuato con successo!');
+      showSuccess('Accesso effettuato con successo!');
       return true;
     } catch (error: any) {
       console.error('Login error:', error);
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.detail || 
+      const errorMessage = error.response?.data?.message ||
+                          error.response?.data?.detail ||
                           error.response?.data?.non_field_errors?.[0] ||
-                          'Errore durante l\'accesso';
-      toast.error(errorMessage);
+                          "Errore durante l'accesso";
+      showError(errorMessage);
       return false;
     }
   };
@@ -61,31 +62,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
       setUser(response.user);
-      toast.success('Registrazione completata con successo!');
+      showSuccess('Registrazione completata con successo!');
       return true;
     } catch (error: any) {
       console.error('Registration error:', error);
-      
-      // Handle field-specific errors
+
       if (error.response?.data) {
         const errorData = error.response.data;
         if (typeof errorData === 'object') {
-          // Display first field error
           const firstError = Object.values(errorData)[0];
           if (Array.isArray(firstError)) {
-            toast.error(firstError[0]);
+            showError(firstError[0] as string);
           } else if (typeof firstError === 'string') {
-            toast.error(firstError);
+            showError(firstError);
           } else {
-            toast.error('Errore durante la registrazione');
+            showError('Errore durante la registrazione');
           }
         } else if (typeof errorData === 'string') {
-          toast.error(errorData);
+          showError(errorData);
         } else {
-          toast.error('Errore durante la registrazione');
+          showError('Errore durante la registrazione');
         }
       } else {
-        toast.error('Errore durante la registrazione');
+        showError('Errore durante la registrazione');
       }
       return false;
     }
@@ -95,8 +94,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
-    toast.success('Logout effettuato con successo');
-    // Redirect to homepage after logout
     window.location.href = '/';
   };
 

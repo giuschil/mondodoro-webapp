@@ -15,7 +15,7 @@ import {
   Users,
   Clock,
 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -38,6 +38,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function EventsPage() {
   const { user } = useAuth();
+  const { showError, showSuccess } = useDialog();
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,7 +46,7 @@ export default function EventsPage() {
     if (!user) return;
     eventsAPI.getAll()
       .then((data) => setEvents(data.results))
-      .catch(() => toast.error('Errore nel caricamento degli eventi'))
+      .catch(() => showError('Errore nel caricamento degli eventi'))
       .finally(() => setLoading(false));
   }, [user]);
 
@@ -54,9 +55,9 @@ export default function EventsPage() {
     try {
       await eventsAPI.delete(id);
       setEvents((prev) => prev.filter((e) => e.id !== id));
-      toast.success('Evento eliminato');
+      showSuccess('Evento eliminato');
     } catch {
-      toast.error("Errore durante l'eliminazione");
+      showError("Errore durante l'eliminazione");
     }
   };
 

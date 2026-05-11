@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
-import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/lib/auth-context';
+import { DialogProvider } from '@/lib/dialog-context';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -59,25 +59,11 @@ export default function RootLayout({
         </noscript>
 
         <ErrorBoundary>
-          <AuthProvider>
-            {children}
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                },
-                success: {
-                  style: { background: '#10b981' },
-                },
-                error: {
-                  style: { background: '#ef4444' },
-                },
-              }}
-            />
-          </AuthProvider>
+          <DialogProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </DialogProvider>
         </ErrorBoundary>
 
         {/* Google Tag Manager — loaded after page is interactive, non-blocking */}

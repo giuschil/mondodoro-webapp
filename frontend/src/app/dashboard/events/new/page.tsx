@@ -8,7 +8,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { ArrowLeft, CalendarDays, Clock, Plus, Trash2, LayoutList } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 interface SlotDraft {
   id: string;
@@ -33,6 +33,7 @@ function addMinutes(time: string, minutes: number): string {
 
 export default function NewEventPage() {
   const router = useRouter();
+  const { showError, showSuccess } = useDialog();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -78,26 +79,26 @@ export default function NewEventPage() {
 
   const addSingleSlot = () => {
     if (!singleSlot.start_time) {
-      toast.error("Inserisci l'orario di inizio dello slot");
+      showError("Inserisci l'orario di inizio dello slot");
       return;
     }
     if (singleSlot.end_time && singleSlot.start_time >= singleSlot.end_time) {
-      toast.error("L'orario di fine deve essere successivo all'inizio");
+      showError("L'orario di fine deve essere successivo all'inizio");
       return;
     }
     setSlots((prev) => [...prev, { ...singleSlot, id: generateId() }]);
     setSingleSlot({ start_time: '', end_time: '', price: 0, max_attendees: 1, notes: '' });
     setShowSingleForm(false);
-    toast.success('Slot aggiunto');
+    showSuccess('Slot aggiunto');
   };
 
   const generateSeries = () => {
     if (!series.from_time || !series.to_time) {
-      toast.error('Inserisci orario inizio e fine della serie');
+      showError('Inserisci orario inizio e fine della serie');
       return;
     }
     if (series.from_time >= series.to_time) {
-      toast.error("L'orario di fine deve essere successivo all'inizio");
+      showError("L'orario di fine deve essere successivo all'inizio");
       return;
     }
     const newSlots: SlotDraft[] = [];
@@ -116,13 +117,13 @@ export default function NewEventPage() {
       current = next;
     }
     if (newSlots.length === 0) {
-      toast.error('Nessuno slot generato. Controlla gli orari.');
+      showError('Nessuno slot generato. Controlla gli orari.');
       return;
     }
     setSlots((prev) => [...prev, ...newSlots]);
     setSeries({ from_time: '', to_time: '', duration_minutes: 30, price: 0, max_attendees: 1 });
     setShowSeriesForm(false);
-    toast.success(`${newSlots.length} slot aggiunti`);
+    showSuccess(`${newSlots.length} slot aggiunti`);
   };
 
   const removeSlot = (id: string) => {
@@ -154,7 +155,7 @@ export default function NewEventPage() {
         })));
       }
 
-      toast.success('Evento creato!');
+      showSuccess('Evento creato!');
       router.push(`/dashboard/events/${event.id}`);
     } catch (err: any) {
       const data = err?.response?.data;
@@ -165,7 +166,7 @@ export default function NewEventPage() {
         });
         setErrors(fieldErrors);
       } else {
-        toast.error("Errore durante la creazione dell'evento");
+        showError("Errore durante la creazione dell'evento");
       }
     } finally {
       setLoading(false);

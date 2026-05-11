@@ -14,12 +14,13 @@ import {
   Euro
 } from 'lucide-react';
 import Link from 'next/link';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 export default function EditGiftListPage() {
   const { user } = useAuth();
   const router = useRouter();
   const params = useParams();
+  const { showError, showSuccess } = useDialog();
   const giftListId = params.id as string;
   
   const [formData, setFormData] = useState({
@@ -60,7 +61,7 @@ export default function EditGiftListPage() {
         });
       } catch (error) {
         console.error('Error fetching gift list:', error);
-        toast.error('Errore nel caricamento della lista');
+        showError('Errore nel caricamento della lista');
         router.push('/dashboard/gift-lists');
       } finally {
         setLoading(false);
@@ -103,7 +104,7 @@ export default function EditGiftListPage() {
     e.preventDefault();
     
     if (!validateForm()) {
-      toast.error('Correggi gli errori nel form');
+      showError('Correggi gli errori nel form');
       return;
     }
     
@@ -138,11 +139,11 @@ export default function EditGiftListPage() {
       
       await giftListsAPI.update(giftListId, payload);
       
-      toast.success('Lista regalo aggiornata con successo!');
+      showSuccess('Lista regalo aggiornata con successo!');
       router.push('/dashboard/gift-lists');
     } catch (error: any) {
       console.error('Error updating gift list:', error);
-      toast.error(error.response?.data?.detail || 'Errore durante l\'aggiornamento');
+      showError(error.response?.data?.detail || 'Errore durante l\'aggiornamento');
     } finally {
       setSaving(false);
     }

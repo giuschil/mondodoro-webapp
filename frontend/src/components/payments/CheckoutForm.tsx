@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import Button from '@/components/ui/Button';
 import { CreditCard, Loader2 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 interface CheckoutFormProps {
   onSuccess?: () => void;
@@ -21,6 +21,7 @@ export default function CheckoutForm({
 }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
+  const { showError, showSuccess } = useDialog();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,16 +49,16 @@ export default function CheckoutForm({
 
       if (error) {
         console.error('Payment failed:', error);
-        toast.error(error.message || 'Errore durante il pagamento');
+        showError(error.message || 'Errore durante il pagamento');
         onError?.(error.message || 'Errore durante il pagamento');
       } else {
-        toast.success('Pagamento completato con successo!');
+        showSuccess('Pagamento completato con successo!');
         onSuccess?.();
       }
     } catch (err) {
       console.error('Payment error:', err);
       const errorMessage = 'Si è verificato un errore imprevisto';
-      toast.error(errorMessage);
+      showError(errorMessage);
       onError?.(errorMessage);
     } finally {
       setLoading(false);

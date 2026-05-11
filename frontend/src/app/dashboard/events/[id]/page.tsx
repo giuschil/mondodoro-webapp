@@ -22,7 +22,7 @@ import {
   Users,
   Clock,
 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 const STATUS_COLORS: Record<string, string> = {
   draft: 'bg-yellow-100 text-yellow-800',
@@ -66,6 +66,7 @@ interface SlotDraft {
 
 export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { showError, showSuccess } = useDialog();
 
   const [event, setEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -91,7 +92,7 @@ export default function EventDetailPage() {
     if (!id) return;
     eventsAPI.getById(id)
       .then(setEvent)
-      .catch(() => toast.error('Errore nel caricamento'))
+      .catch(() => showError('Errore nel caricamento'))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -101,7 +102,7 @@ export default function EventDetailPage() {
 
   const copyLink = () => {
     navigator.clipboard.writeText(publicUrl);
-    toast.success('Link copiato!');
+    showSuccess('Link copiato!');
   };
 
   const toggleStatus = async () => {
@@ -111,9 +112,9 @@ export default function EventDetailPage() {
     try {
       const updated = await eventsAPI.update(id, { status: newStatus });
       setEvent(updated);
-      toast.success(newStatus === 'active' ? 'Evento attivato' : 'Evento impostato come bozza');
+      showSuccess(newStatus === 'active' ? 'Evento attivato' : 'Evento impostato come bozza');
     } catch {
-      toast.error('Errore aggiornamento stato');
+      showError('Errore aggiornamento stato');
     } finally {
       setTogglingStatus(false);
     }
@@ -125,9 +126,9 @@ export default function EventDetailPage() {
       await eventsAPI.updateBookingStatus(id, bookingId, 'paid');
       const updated = await eventsAPI.getById(id);
       setEvent(updated);
-      toast.success('Prenotazione confermata');
+      showSuccess('Prenotazione confermata');
     } catch {
-      toast.error('Errore');
+      showError('Errore');
     } finally {
       setUpdatingId(null);
     }
@@ -140,9 +141,9 @@ export default function EventDetailPage() {
       await eventsAPI.updateBookingStatus(id, bookingId, 'cancelled');
       const updated = await eventsAPI.getById(id);
       setEvent(updated);
-      toast.success('Prenotazione annullata');
+      showSuccess('Prenotazione annullata');
     } catch {
-      toast.error('Errore');
+      showError('Errore');
     } finally {
       setUpdatingId(null);
     }
@@ -154,19 +155,19 @@ export default function EventDetailPage() {
       await eventsAPI.deleteSlot(id, slotId);
       const updated = await eventsAPI.getById(id);
       setEvent(updated);
-      toast.success('Slot eliminato');
+      showSuccess('Slot eliminato');
     } catch {
-      toast.error('Errore eliminazione slot');
+      showError('Errore eliminazione slot');
     }
   };
 
   const addDraftSingleSlot = () => {
     if (!singleSlot.start_time) {
-      toast.error("Inserisci l'orario di inizio");
+      showError("Inserisci l'orario di inizio");
       return;
     }
     if (singleSlot.end_time && singleSlot.start_time >= singleSlot.end_time) {
-      toast.error("L'orario di fine deve essere successivo all'inizio");
+      showError("L'orario di fine deve essere successivo all'inizio");
       return;
     }
     setDraftSlots((prev) => [...prev, { ...singleSlot, id: generateId() }]);
@@ -176,11 +177,11 @@ export default function EventDetailPage() {
 
   const generateSeriesSlots = () => {
     if (!series.from_time || !series.to_time) {
-      toast.error('Inserisci orario inizio e fine della serie');
+      showError('Inserisci orario inizio e fine della serie');
       return;
     }
     if (series.from_time >= series.to_time) {
-      toast.error("L'orario di fine deve essere successivo all'inizio");
+      showError("L'orario di fine deve essere successivo all'inizio");
       return;
     }
     const newSlots: SlotDraft[] = [];
@@ -199,13 +200,13 @@ export default function EventDetailPage() {
       current = next;
     }
     if (newSlots.length === 0) {
-      toast.error('Nessuno slot generato');
+      showError('Nessuno slot generato');
       return;
     }
     setDraftSlots((prev) => [...prev, ...newSlots]);
     setSeries({ from_time: '', to_time: '', duration_minutes: 30, price: 0, max_attendees: 1 });
     setShowSeriesForm(false);
-    toast.success(`${newSlots.length} slot pronti`);
+    showSuccess(`${newSlots.length} slot pronti`);
   };
 
   const saveSlots = async () => {
@@ -222,9 +223,9 @@ export default function EventDetailPage() {
       setDraftSlots([]);
       const updated = await eventsAPI.getById(id);
       setEvent(updated);
-      toast.success('Slot salvati');
+      showSuccess('Slot salvati');
     } catch {
-      toast.error('Errore salvataggio slot');
+      showError('Errore salvataggio slot');
     } finally {
       setAddingSlots(false);
     }

@@ -14,10 +14,10 @@ jest.mock('@/lib/api', () => ({
   default: {},
 }));
 
-// Mock react-hot-toast
-jest.mock('react-hot-toast', () => ({
-  success: jest.fn(),
-  error: jest.fn(),
+// Mock dialog context
+jest.mock('@/lib/dialog-context', () => ({
+  useDialog: () => ({ showError: jest.fn(), showSuccess: jest.fn(), showInfo: jest.fn() }),
+  DialogProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 const mockUser = {
