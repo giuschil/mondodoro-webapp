@@ -25,9 +25,9 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         """Validate email uniqueness"""
         user = self.instance
-        if User.objects.exclude(pk=user.pk if user else None).filter(email=value).exists():
-            raise serializers.ValidationError("A user with this email already exists.")
-        return value
+        if User.objects.exclude(pk=user.pk if user else None).filter(email__iexact=value).exists():
+            raise serializers.ValidationError("Esiste già un account con questa email.")
+        return value.lower()
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -52,10 +52,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
     
     def validate_email(self, value):
-        """Validate email uniqueness"""
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("A user with this email already exists.")
-        return value
+        """Validate email uniqueness case-insensitive"""
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError("Esiste già un account con questa email.")
+        return value.lower()
     
     def validate_role(self, value):
         """Validate role assignment"""
