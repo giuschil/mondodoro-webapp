@@ -110,7 +110,7 @@ export default function GiftListsPage() {
     <DashboardLayout>
       {/* Header */}
       <div className="mb-8">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-secondary-900">
               Le Tue Liste Regalo
@@ -119,7 +119,7 @@ export default function GiftListsPage() {
               Gestisci le tue liste regalo e monitora i contributi
             </p>
           </div>
-          <Link href="/dashboard/gift-lists/new">
+          <Link href="/dashboard/gift-lists/new" className="shrink-0">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
               Nuova Lista Regalo
