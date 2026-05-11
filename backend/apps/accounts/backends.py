@@ -13,18 +13,20 @@ class EmailOrUsernameBackend(ModelBackend):
             return None
         
         try:
-            # Try to find user by email or username
             user = User.objects.get(
-                Q(email__iexact=username) | Q(username__iexact=username)
+                Q(email__iexact=username) | Q(username__iexact=username),
+                is_active=True,
             )
         except User.DoesNotExist:
-            # Run the default password hasher once to reduce the timing
-            # difference between an existing and a nonexistent user
             User().set_password(password)
             return None
         except User.MultipleObjectsReturned:
-            # In case of multiple matches (shouldn't happen), return None
-            return None
+            user = User.objects.filter(
+                Q(email__iexact=username) | Q(username__iexact=username),
+                is_active=True,
+            ).order_by('date_joined').first()
+            if not user:
+                return None
         
         if user.check_password(password) and self.user_can_authenticate(user):
             return user
