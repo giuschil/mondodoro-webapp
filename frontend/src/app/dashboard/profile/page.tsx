@@ -7,10 +7,11 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { User, Save, Edit3, Key, Building2, CreditCard, CheckCircle, XCircle, RefreshCw, ExternalLink } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 export default function ProfilePage() {
   const { user, updateUser } = useAuth();
+  const { showError, showSuccess } = useDialog();
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
   const [stripeLoading, setStripeLoading] = useState(false);
@@ -65,11 +66,11 @@ export default function ProfilePage() {
         .then((result) => {
           if (result.success) {
             setStripeStatus(result);
-            toast.success('Configurazione Stripe completata con successo!');
+            showSuccess('Configurazione Stripe completata con successo!');
             // Then refresh user data
             return authAPI.me();
           } else {
-            toast.error('Errore durante la verifica dello stato Stripe');
+            showError('Errore durante la verifica dello stato Stripe');
             return null;
           }
         })
@@ -80,7 +81,7 @@ export default function ProfilePage() {
         })
         .catch((error) => {
           console.error('Error checking Stripe status:', error);
-          toast.error('Errore durante l\'aggiornamento dello stato Stripe');
+          showError('Errore durante l\'aggiornamento dello stato Stripe');
         });
       // Clean URL
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -148,11 +149,11 @@ export default function ProfilePage() {
     try {
       const updatedUser = await authAPI.updateProfile(formData);
       updateUser(updatedUser);
-      toast.success('Profilo aggiornato con successo!');
+      showSuccess('Profilo aggiornato con successo!');
       setEditing(false);
     } catch (error: any) {
       console.error('Error updating profile:', error);
-      toast.error('Errore durante l\'aggiornamento del profilo');
+      showError('Errore durante l\'aggiornamento del profilo');
     } finally {
       setLoading(false);
     }
@@ -420,7 +421,7 @@ export default function ProfilePage() {
                       window.location.href = onboarding_url;
                     } catch (error: any) {
                       console.error('Error creating Stripe onboarding:', error);
-                      toast.error(error.response?.data?.error || 'Errore durante la creazione del link di onboarding');
+                      showError(error.response?.data?.error || 'Errore durante la creazione del link di onboarding');
                       setStripeLoading(false);
                     }
                   }}

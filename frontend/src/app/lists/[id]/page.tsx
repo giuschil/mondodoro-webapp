@@ -8,11 +8,12 @@ import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
 import { Heart, Users, Euro, Calendar, ArrowLeft, Gift, MessageCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 export default function PublicGiftListPage() {
   const params = useParams();
   const giftListId = params.id as string;
+  const { showError, showSuccess } = useDialog();
   
   const [giftList, setGiftList] = useState<GiftListPublic | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,11 +51,11 @@ export default function PublicGiftListPage() {
     const sessionId = urlParams.get('session_id');
 
     if (payment === 'success' && sessionId) {
-      toast.success('Pagamento completato con successo! Grazie per il tuo contributo.');
+      showSuccess('Pagamento completato con successo! Grazie per il tuo contributo.');
       // Remove URL parameters
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (payment === 'cancelled') {
-      toast.error('Pagamento annullato. Puoi riprovare quando vuoi.');
+      showError('Pagamento annullato. Puoi riprovare quando vuoi.');
       // Remove URL parameters
       window.history.replaceState({}, document.title, window.location.pathname);
     }
@@ -82,7 +83,7 @@ export default function PublicGiftListPage() {
       window.location.href = paymentData.checkout_url;
     } catch (error) {
       console.error('Error creating contribution:', error);
-      toast.error('Errore durante la creazione del contributo');
+      showError('Errore durante la creazione del contributo');
     } finally {
       setContributing(false);
     }

@@ -13,7 +13,7 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
-import toast, { Toaster } from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 function formatDate(d: string) {
   return new Date(d + 'T00:00:00').toLocaleDateString('it-IT', {
@@ -24,6 +24,7 @@ function formatDate(d: string) {
 export default function PublicBookingPage() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
+  const { showError } = useDialog();
 
   const [event, setEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +45,7 @@ export default function PublicBookingPage() {
     if (!id) return;
     eventsAPI.getPublic(id)
       .then(setEvent)
-      .catch(() => toast.error('Evento non trovato o non disponibile'))
+      .catch(() => showError('Evento non trovato o non disponibile'))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -53,7 +54,7 @@ export default function PublicBookingPage() {
     if (payment === 'success') {
       setSuccess(true);
     } else if (payment === 'cancelled') {
-      toast.error('Pagamento annullato. Riprova quando vuoi.');
+      showError('Pagamento annullato. Riprova quando vuoi.');
     }
   }, [searchParams]);
 
@@ -89,13 +90,13 @@ export default function PublicBookingPage() {
     } catch (err: any) {
       const data = err?.response?.data;
       if (err?.response?.status === 409) {
-        toast.error('Slot non più disponibile. Scegli un altro orario.');
+        showError('Slot non più disponibile. Scegli un altro orario.');
         eventsAPI.getPublic(id).then(setEvent).catch(() => {});
         setSelectedSlot(null);
       } else if (data?.error) {
-        toast.error(data.error);
+        showError(data.error);
       } else {
-        toast.error('Errore durante la prenotazione. Riprova.');
+        showError('Errore durante la prenotazione. Riprova.');
       }
     } finally {
       setSubmitting(false);
@@ -124,7 +125,6 @@ export default function PublicBookingPage() {
   if (success) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <Toaster position="top-center" />
         <div className="bg-white rounded-2xl shadow-lg p-10 max-w-md w-full text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Prenotazione confermata!</h2>
@@ -150,7 +150,6 @@ export default function PublicBookingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Toaster position="top-center" />
 
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-3">

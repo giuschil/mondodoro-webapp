@@ -21,10 +21,11 @@ import {
   Pencil
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 export default function GiftListsPage() {
   const { user } = useAuth();
+  const { showError, showSuccess } = useDialog();
   const [giftLists, setGiftLists] = useState<GiftList[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,7 +41,7 @@ export default function GiftListsPage() {
         setGiftLists(response.results);
       } catch (error) {
         console.error('Error fetching gift lists:', error);
-        toast.error('Errore nel caricamento delle liste regalo');
+        showError('Errore nel caricamento delle liste regalo');
       } finally {
         setLoading(false);
       }
@@ -61,10 +62,10 @@ export default function GiftListsPage() {
     try {
       await giftListsAPI.delete(id);
       setGiftLists(prev => prev.filter(list => list.id !== id));
-      toast.success('Lista regalo eliminata con successo');
+      showSuccess('Lista regalo eliminata con successo');
     } catch (error) {
       console.error('Error deleting gift list:', error);
-      toast.error('Errore durante l\'eliminazione della lista');
+      showError('Errore durante l\'eliminazione della lista');
     }
   };
 

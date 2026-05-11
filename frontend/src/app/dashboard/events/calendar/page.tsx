@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { eventsAPI, EventItem } from '@/lib/api';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 const WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
 
@@ -36,6 +36,7 @@ function toYMD(date: Date): string {
 }
 
 export default function EventsCalendarPage() {
+  const { showError } = useDialog();
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
@@ -45,7 +46,7 @@ export default function EventsCalendarPage() {
   useEffect(() => {
     eventsAPI.getAll()
       .then((data) => setEvents(data.results))
-      .catch(() => toast.error('Errore nel caricamento degli eventi'))
+      .catch(() => showError('Errore nel caricamento degli eventi'))
       .finally(() => setLoading(false));
   }, []);
 

@@ -26,13 +26,14 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import toast from 'react-hot-toast';
+import { useDialog } from '@/lib/dialog-context';
 
 export default function GiftListDetailPage() {
   const { user } = useAuth();
   const params = useParams();
   const router = useRouter();
   const listId = params.id as string;
+  const { showError, showSuccess } = useDialog();
 
   const [giftList, setGiftList] = useState<GiftList | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +46,7 @@ export default function GiftListDetailPage() {
         setGiftList(response);
       } catch (error) {
         console.error('Error fetching gift list:', error);
-        toast.error('Errore nel caricamento della lista regalo');
+        showError('Errore nel caricamento della lista regalo');
         router.push('/dashboard/gift-lists');
       } finally {
         setLoading(false);
@@ -64,7 +65,7 @@ export default function GiftListDetailPage() {
     
     try {
       await navigator.clipboard.writeText(publicUrl);
-      toast.success('Link copiato negli appunti!');
+      showSuccess('Link copiato negli appunti!');
     } catch (error) {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
@@ -73,7 +74,7 @@ export default function GiftListDetailPage() {
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      toast.success('Link copiato negli appunti!');
+      showSuccess('Link copiato negli appunti!');
     }
   };
 
