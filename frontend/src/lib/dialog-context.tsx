@@ -26,6 +26,12 @@ const DEFAULT_TITLES: Record<DialogType, string> = {
   info: 'Informazione',
 };
 
+const ICON_COLOR: Record<DialogType, string> = {
+  error: '#ef4444',
+  success: '#22c55e',
+  info: '#6b7280',
+};
+
 export function DialogProvider({ children }: { children: ReactNode }) {
   const [dialog, setDialog] = useState<DialogState>({
     open: false,
@@ -48,47 +54,87 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     <DialogContext.Provider value={{ showError, showSuccess, showInfo }}>
       {children}
       {dialog.open && (
+        /* Overlay */
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
           onClick={close}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.45)',
+            padding: '16px',
+          }}
         >
+          {/* Modal card */}
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '16px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+              width: '100%',
+              maxWidth: '400px',
+              overflow: 'hidden',
+            }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
-              <div className="flex items-center gap-3">
-                {dialog.type === 'error' && (
-                  <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
-                )}
-                {dialog.type === 'success' && (
-                  <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
-                )}
-                {dialog.type === 'info' && (
-                  <AlertCircle className="h-5 w-5 text-gray-400 shrink-0" />
-                )}
-                <span className="font-semibold text-gray-900 text-base">{dialog.title}</span>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '20px 24px 16px',
+              borderBottom: '1px solid #f3f4f6',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {dialog.type === 'error' && <AlertCircle size={20} color={ICON_COLOR.error} />}
+                {dialog.type === 'success' && <CheckCircle size={20} color={ICON_COLOR.success} />}
+                {dialog.type === 'info' && <AlertCircle size={20} color={ICON_COLOR.info} />}
+                <span style={{ fontWeight: 600, fontSize: '15px', color: '#111827' }}>
+                  {dialog.title}
+                </span>
               </div>
               <button
                 onClick={close}
-                className="text-gray-400 hover:text-gray-600 transition-colors rounded-lg p-1 hover:bg-gray-100"
                 aria-label="Chiudi"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  borderRadius: '8px',
+                  color: '#9ca3af',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
               >
-                <X className="h-4 w-4" />
+                <X size={16} />
               </button>
             </div>
 
             {/* Body */}
-            <div className="px-6 py-5">
-              <p className="text-gray-700 text-sm leading-relaxed">{dialog.message}</p>
+            <div style={{ padding: '20px 24px' }}>
+              <p style={{ margin: 0, fontSize: '14px', color: '#374151', lineHeight: '1.6' }}>
+                {dialog.message}
+              </p>
             </div>
 
             {/* Footer */}
-            <div className="px-6 pb-5 flex justify-end">
+            <div style={{ padding: '0 24px 20px', display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 onClick={close}
-                className="px-5 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-700 transition-colors"
+                style={{
+                  padding: '8px 20px',
+                  backgroundColor: '#111827',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                }}
               >
                 Chiudi
               </button>
