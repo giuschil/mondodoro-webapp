@@ -81,13 +81,13 @@ export default function DashboardPage() {
     <DashboardLayout>
       {/* Header */}
       <div className="mb-8">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-secondary-600">
               Ecco una panoramica della tua attività su ListDreams
             </p>
           </div>
-          <Link href="/dashboard/gift-lists/new">
+          <Link href="/dashboard/gift-lists/new" className="shrink-0">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
               Nuova Lista Regalo
@@ -152,11 +152,11 @@ export default function DashboardPage() {
       {/* Recent Gift Lists */}
       <div className="bg-white shadow rounded-lg">
         <div className="px-6 py-4 border-b border-secondary-200">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-lg font-medium text-secondary-900">
               Le Tue Liste Regalo
             </h2>
-            <Link href="/dashboard/gift-lists">
+            <Link href="/dashboard/gift-lists" className="shrink-0">
               <Button variant="outline" size="sm">
                 Visualizza Tutte
               </Button>
